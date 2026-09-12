@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#7A3F56">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -12,1238 +12,182 @@
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <title>Meu Planner</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
-
-  :root{
-    --bg: #F5F6F4;
-    --paper: #FFFFFF;
-    --ink: #1E2233;
-    --ink-soft: #5B5F73;
-    --plum: #7A3F56;
-    --plum-soft: #F1E3E8;
-    --gold: #B9922F;
-    --gold-soft: #FBF1DA;
-    --sage: #55735F;
-    --sage-soft: #E7EFE9;
-    --sky: #3C6E8F;
-    --sky-soft: #E2EEF3;
-    --line: rgba(30,34,51,0.07);
-    --shadow: 0 8px 24px rgba(30,34,51,0.08);
-    --radius: 14px;
-  }
-  *{ box-sizing: border-box; }
-  html,body{
-    margin:0; padding:0;
-    background: var(--bg);
-    color: var(--ink);
-    font-family: 'Inter', -apple-system, sans-serif;
-    -webkit-font-smoothing: antialiased;
-  }
-  h1,h2,h3{ font-family:'Fraunces', Georgia, serif; font-weight:600; margin:0; color: var(--ink); }
-  .wrap{
-    max-width: 980px;
-    margin: 0 auto;
-    padding: 36px 20px 80px;
-  }
-  header.top{
-    text-align: center;
-    margin-bottom: 28px;
-  }
-  header.top h1{ font-size: 30px; letter-spacing: -0.01em; }
-  header.top p{ color: var(--ink-soft); margin-top: 6px; font-size: 14.5px; }
-
-  nav.tabs{
-    display:flex;
-    justify-content:center;
-    gap: 6px;
-    margin-bottom: 32px;
-    flex-wrap: wrap;
-  }
-  nav.tabs button{
-    border:none;
-    background: transparent;
-    color: var(--ink-soft);
-    font-family:'Inter';
-    font-size: 14.5px;
-    font-weight: 600;
-    padding: 10px 18px;
-    border-radius: 999px;
-    cursor:pointer;
-    transition: all .15s ease;
-  }
-  nav.tabs button:hover{ color: var(--ink); background: var(--line); }
-  nav.tabs button.active{ background: var(--ink); color: #fff; }
-
-  .panel{ display:none; }
-  .panel.active{ display:block; }
-
-  .card{
-    background: var(--paper);
-    border-radius: var(--radius);
-    padding: 24px;
-    box-shadow: var(--shadow);
-    margin-bottom: 20px;
-  }
-
-  /* ---- Calendar controls ---- */
-  .cal-toolbar{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-  .cal-toolbar .nav-group{ display:flex; align-items:center; gap: 10px; }
-  .icon-btn{
-    border:none; background: var(--bg); color: var(--ink);
-    width: 34px; height:34px; border-radius: 50%;
-    font-size: 16px; cursor:pointer; display:flex; align-items:center; justify-content:center;
-    transition: background .15s;
-  }
-  .icon-btn:hover{ background: var(--plum-soft); }
-  .cal-title{ font-family:'Fraunces'; font-size: 20px; min-width: 210px; text-align:center; }
-  .view-toggle{ display:flex; background: var(--bg); border-radius: 999px; padding: 3px; }
-  .view-toggle button{
-    border:none; background:transparent; padding: 7px 16px; border-radius: 999px;
-    font-family:'Inter'; font-size: 13.5px; font-weight:600; color: var(--ink-soft); cursor:pointer;
-  }
-  .view-toggle button.active{ background: var(--paper); color: var(--ink); box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
-  .today-btn{
-    border:1px solid var(--line); background: var(--paper); color: var(--ink);
-    padding: 7px 14px; border-radius: 999px; font-size: 13px; font-weight:600; cursor:pointer;
-  }
-
-  /* ---- Month grid ---- */
-  .month-grid{
-    display:grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 6px;
-  }
-  .month-grid .dow{
-    text-align:center; font-size: 12px; font-weight:700; color: var(--ink-soft);
-    padding-bottom: 6px; text-transform: none;
-  }
-  .day-cell{
-    min-height: 88px;
-    border-radius: 10px;
-    padding: 8px;
-    background: var(--bg);
-    cursor:pointer;
-    transition: background .15s, transform .1s;
-    position: relative;
-  }
-  .day-cell:hover{ background: var(--plum-soft); }
-  .day-cell.other-month{ opacity: 0.35; }
-  .day-cell.today{ background: var(--sky-soft); }
-  .day-cell.holiday{ background: var(--gold-soft); }
-  .day-num{ font-size: 13px; font-weight:700; }
-  .day-holiday-label{ font-size: 10px; color: var(--gold); font-weight:600; margin-top:2px; display:block; line-height:1.2; }
-  .day-events{ margin-top: 6px; display:flex; flex-direction:column; gap:3px; }
-  .day-event-chip{
-    font-size: 10.5px; background: var(--plum); color:#fff; padding: 2px 6px; border-radius: 6px;
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-  }
-  .day-more{ font-size: 10px; color: var(--ink-soft); }
-
-  /* ---- Week grid ---- */
-  .week-grid{
-    display:grid;
-    grid-template-columns: 56px repeat(7, 1fr);
-    max-height: 560px;
-    overflow-y: auto;
-    border-radius: 10px;
-  }
-  .week-head{ position: sticky; top:0; background: var(--paper); z-index: 2; padding-bottom: 8px;}
-  .week-head-cell{ text-align:center; font-size: 12.5px; font-weight:700; padding: 6px 2px; }
-  .week-head-cell .wd{ display:block; color: var(--ink-soft); font-weight:600; font-size:11px;}
-  .week-head-cell.today .num{ background: var(--sky); color:#fff; border-radius:50%; padding:2px 8px; }
-  .hour-label{ font-size: 10.5px; color: var(--ink-soft); text-align:right; padding-right: 6px; padding-top: 2px; }
-  .hour-cell{
-    border-top: 1px solid var(--line);
-    min-height: 44px;
-    cursor:pointer;
-    position:relative;
-  }
-  .hour-cell:hover{ background: var(--plum-soft); }
-  .week-event{
-    background: var(--plum); color:#fff; font-size: 10.5px; border-radius:6px;
-    padding: 2px 5px; margin: 1px 3px; overflow:hidden;
-  }
-
-  /* ---- Modal ---- */
-  .modal-overlay{
-    display:none; position: fixed; inset:0; background: rgba(20,20,30,0.42);
-    align-items:center; justify-content:center; z-index: 1000; padding: 20px;
-  }
-  .modal-overlay.open{ display:flex; }
-  .modal-box{
-    background: var(--paper); border-radius: 16px; max-width: 440px; width:100%;
-    padding: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.25);
-    max-height: 82vh; overflow-y:auto;
-    animation: pop .16s ease;
-  }
-  @keyframes pop{ from{ transform: scale(.96); opacity:0;} to{ transform:scale(1); opacity:1; } }
-  .modal-box h3{ font-size: 19px; margin-bottom: 4px; }
-  .modal-sub{ color: var(--ink-soft); font-size: 13px; margin-bottom: 16px; }
-  .modal-close{
-    float:right; border:none; background:transparent; font-size: 20px; cursor:pointer; color: var(--ink-soft);
-  }
-  .field-label{ font-size: 12.5px; font-weight:600; color: var(--ink-soft); margin: 12px 0 4px; display:block; }
-  input[type=text], input[type=time], input[type=number], textarea, select{
-    width:100%; border:1px solid var(--line); border-radius: 8px; padding: 9px 10px;
-    font-family:'Inter'; font-size: 14px; background: var(--bg); color: var(--ink);
-  }
-  textarea{ min-height: 70px; resize: vertical; }
-  .btn{
-    border:none; border-radius: 999px; padding: 9px 18px; font-weight:600; font-size: 13.5px;
-    cursor:pointer; font-family:'Inter';
-  }
-  .btn-primary{ background: var(--ink); color:#fff; }
-  .btn-ghost{ background: var(--bg); color: var(--ink); }
-  .btn-danger{ background: var(--plum-soft); color: var(--plum); }
-  .btn-row{ display:flex; gap:8px; margin-top:18px; justify-content:flex-end; }
-  .event-list-item{
-    display:flex; align-items:center; justify-content:space-between;
-    padding: 8px 10px; background: var(--bg); border-radius: 8px; margin-bottom: 6px; font-size: 13.5px;
-  }
-  .event-list-item .t{ font-weight:700; color: var(--plum); margin-right: 8px; }
-  .event-list-item button{ border:none; background:transparent; color: var(--ink-soft); cursor:pointer; font-size:15px; }
-
-  .task-item{ display:flex; align-items:center; gap:8px; padding: 6px 0; }
-  .task-item input[type=checkbox]{ width:16px; height:16px; }
-  .task-item span.done{ text-decoration: line-through; color: var(--ink-soft); }
-  .task-item button{ margin-left:auto; border:none; background:transparent; color:var(--ink-soft); cursor:pointer; }
-
-  /* ---- Rotina Semanal ---- */
-  .rotina-toolbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:10px;}
-  .rotina-grid{ display:grid; grid-template-columns: repeat(7,1fr); gap:10px; }
-  .rotina-day{
-    background: var(--bg); border-radius: 12px; padding: 12px 10px; display:flex; flex-direction:column; gap:8px;
-  }
-  .rotina-day .dname{ font-weight:700; font-size: 13.5px; text-align:center; }
-  .rotina-day textarea{ font-size: 12px; padding:6px 7px; min-height:40px; background:var(--paper); }
-  .rotina-day .slot-label{ font-size: 10px; color: var(--ink-soft); font-weight:600; }
-  .status-row{ display:flex; flex-wrap:wrap; gap:4px; justify-content:center; }
-  .chip{
-    font-size: 10px; padding: 3px 8px; border-radius: 999px; background: var(--paper); color: var(--ink-soft);
-    cursor:pointer; border: 1px solid var(--line); font-weight:600;
-  }
-  .chip.active[data-status="normal"]{ background: var(--sage-soft); color: var(--sage); border-color:transparent;}
-  .chip.active[data-status="sem-aula"]{ background: var(--gold-soft); color: var(--gold); border-color:transparent;}
-  .chip.active[data-status="mudanca"]{ background: var(--sky-soft); color: var(--sky); border-color:transparent;}
-  .chip.active[data-status="home"]{ background: var(--plum-soft); color: var(--plum); border-color:transparent;}
-  .rotina-day.st-sem-aula{ background: var(--gold-soft); }
-  .rotina-day.st-mudanca{ background: var(--sky-soft); }
-  .rotina-day.st-home{ background: var(--plum-soft); }
-
-  /* ---- Lists (Livros / Biblia) ---- */
-  .list-toolbar{ display:flex; justify-content:flex-end; margin-bottom:14px; }
-  .item-row{
-    display:flex; align-items:center; gap:12px; padding: 14px 4px; border-bottom: 1px solid var(--line);
-  }
-  .item-row:last-child{ border-bottom:none; }
-  .item-main{ flex:1; }
-  .item-title{ font-weight:700; font-size: 14.5px; }
-  .item-sub{ font-size: 12.5px; color: var(--ink-soft); margin-top:2px; }
-  .progress-track{ height:6px; background: var(--line); border-radius:4px; margin-top:6px; overflow:hidden; width: 160px;}
-  .progress-fill{ height:100%; background: var(--plum); }
-  .task-count-badge{
-    font-size: 11.5px; background: var(--bg); padding: 4px 10px; border-radius: 999px; font-weight:600; color: var(--ink-soft);
-  }
-  .empty-hint{ text-align:center; color: var(--ink-soft); font-size: 13.5px; padding: 30px 0; }
-  .subtle-btn{ background:none;border:none;color:var(--ink-soft);cursor:pointer;font-size:15px; }
-
-  @media (max-width: 720px){
-    .month-grid{ gap:4px; }
-    .day-cell{ min-height: 60px; }
-    .rotina-grid{ grid-template-columns: repeat(2,1fr); }
-    .week-grid{ font-size: 11px; }
-  }
-
-  .shopping-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
-  .shop-card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:var(--shadow);display:flex;flex-direction:column}
-  .shop-img{width:100%;height:180px;object-fit:cover;border-radius:10px;background:var(--bg);margin-bottom:10px}
-  .shop-img.placeholder{display:flex;align-items:center;justify-content:center;font-size:42px;color:var(--ink-soft)}
-  .shop-title{font-weight:700;font-size:16px}.shop-meta{color:var(--ink-soft);font-size:13px;margin-top:4px}
-  .shop-price{font-size:18px;font-weight:700;margin:8px 0}
-  .shop-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:auto;padding-top:10px}
-  .shop-link{display:inline-block;text-decoration:none;color:var(--plum);font-weight:600;font-size:13px}
-  .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-  .form-grid label{font-size:12px;color:var(--ink-soft);display:flex;flex-direction:column;gap:5px}
-  .form-grid input,.form-grid select,.form-grid textarea{font:inherit;border:1px solid var(--line);border-radius:9px;padding:9px;background:var(--paper);color:var(--ink)}
-  .form-grid .full{grid-column:1/-1}
-  @media(max-width:720px){.form-grid{grid-template-columns:1fr}.form-grid .full{grid-column:auto}}
-  .config-box{max-width:760px}
-</style>
-<style>
-.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap}
-.table-wrap{overflow-x:auto;border-radius:10px}.planner-table{width:100%;border-collapse:collapse;font-size:13px;min-width:720px}
-.planner-table th{background:var(--bg);color:var(--ink-soft);font-size:11.5px;text-align:left;padding:10px;border-bottom:1px solid var(--line)}
-.planner-table td{padding:11px 10px;border-bottom:1px solid var(--line);vertical-align:top}.planner-table small{color:var(--ink-soft);font-size:10.5px}
-.note-box{margin-top:16px;padding:12px 14px;background:var(--gold-soft);border-radius:10px;color:var(--ink-soft);font-size:12px;line-height:1.45}
-.summary-grid,.metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}.metric-card{background:var(--bg);border-radius:12px;padding:15px}.metric-card span{display:block;color:var(--ink-soft);font-size:11.5px}.metric-card strong{display:block;margin-top:5px;font-size:20px}
-.data-card{background:var(--bg);border-radius:12px;padding:15px;margin-bottom:10px}.data-title{font-weight:700}.data-meta{font-size:12px;color:var(--ink-soft);margin-top:4px}.data-actions{display:flex;gap:8px;margin-top:10px}.pill{display:inline-block;padding:4px 9px;border-radius:999px;background:var(--paper);font-size:11px;font-weight:600}
-.mini-input{width:75px;border:1px solid var(--line);border-radius:7px;padding:5px;background:var(--bg)}.tabs{overflow-x:auto;justify-content:flex-start!important;padding-bottom:4px}
-@media(max-width:720px){.summary-grid,.metric-grid{grid-template-columns:1fr}.planner-table{font-size:12px}}
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
+:root{--bg:#f6f4f5;--paper:#fff;--ink:#25232a;--muted:#77727b;--accent:#7a3f56;--accent2:#f0e2e8;--line:#e9e5e7;--soft:#f7f5f6;--good:#5f8069;--goodsoft:#e6efe9;--warn:#a97926;--warnsoft:#fbf1dc;--blue:#4e728c;--bluesoft:#e7f0f5;--shadow:0 12px 35px rgba(40,30,38,.08);--radius:18px}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,Arial,sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer}h1,h2,h3{font-family:Fraunces,Georgia,serif;margin:0}a{color:var(--accent)}
+.app{max-width:1180px;margin:auto;padding:22px 18px 70px}.top{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:20px}.brand h1{font-size:31px}.brand p{margin:5px 0 0;color:var(--muted);font-size:13px}.home-btn{border:0;background:var(--paper);box-shadow:var(--shadow);border-radius:14px;padding:11px 14px;color:var(--ink);font-weight:700}
+.mainnav{display:flex;gap:7px;overflow:auto;padding:5px 2px 12px;position:sticky;top:0;background:linear-gradient(var(--bg) 75%,transparent);z-index:20}.mainnav button{border:0;background:var(--paper);color:var(--muted);padding:10px 13px;border-radius:12px;white-space:nowrap;font-weight:700}.mainnav button.active{background:var(--ink);color:#fff}
+.panel{display:none}.panel.active{display:block}.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);margin-bottom:16px}.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:16px}.section-head p,.sub{color:var(--muted);font-size:13px;margin:4px 0 0}.btn{border:0;border-radius:12px;padding:10px 15px;font-weight:700}.primary{background:var(--ink);color:#fff}.softbtn{background:var(--soft);color:var(--ink)}.danger{background:var(--accent2);color:var(--accent)}
+.dashboard-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}.dash-card{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--shadow)}.dash-card.full{grid-column:1/-1}.dash-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}.dash-title{font-family:Fraunces;font-size:21px}.dash-icon{font-size:24px}.dash-links{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.dash-links button{border:1px solid var(--line);background:var(--soft);border-radius:12px;padding:12px;text-align:left;font-weight:650;color:var(--ink)}.dash-links button:hover{background:var(--accent2)}
+.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.metric{background:var(--soft);border-radius:14px;padding:14px}.metric span{display:block;color:var(--muted);font-size:11px}.metric strong{display:block;font-size:20px;margin-top:5px}.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.data-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.data-card{background:var(--soft);border:1px solid var(--line);border-radius:15px;padding:15px}.data-card h3{font-family:Inter;font-size:15px}.meta{color:var(--muted);font-size:12px;margin-top:5px;line-height:1.45}.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.smallbtn{border:0;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:7px 9px;font-size:12px;font-weight:650}.pill{display:inline-block;border-radius:999px;padding:5px 9px;background:var(--paper);font-size:11px;font-weight:700;margin:3px 3px 0 0}.due{background:var(--warnsoft);color:var(--warn)}.ok{background:var(--goodsoft);color:var(--good)}
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}.field label{display:block;color:var(--muted);font-size:11.5px;font-weight:700;margin-bottom:5px}.field.full{grid-column:1/-1}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:11px;background:var(--paper);padding:10px 11px;color:var(--ink);outline:none}input:focus,select:focus,textarea:focus{border-color:var(--accent)}textarea{min-height:75px;resize:vertical}.tablewrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:760px}.table th{text-align:left;background:var(--soft);color:var(--muted);font-size:11px;padding:10px}.table td{border-bottom:1px solid var(--line);padding:9px;font-size:12px;vertical-align:middle}.table input{min-width:90px;padding:7px}.empty{text-align:center;color:var(--muted);padding:24px;font-size:13px}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(30,25,30,.45);z-index:1000;align-items:center;justify-content:center;padding:16px}.modal-overlay.open{display:flex}.modal{background:var(--paper);width:min(560px,100%);max-height:90vh;overflow:auto;border-radius:20px;padding:22px;box-shadow:0 25px 80px rgba(0,0,0,.25)}.modal-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:14px}.close{border:0;background:var(--soft);border-radius:50%;width:34px;height:34px;font-size:20px}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.check{width:18px;height:18px}.star{font-size:23px;background:none;border:0;padding:0 2px;color:#c7c1c5}.star.on{color:#d59d27}.cover{width:92px;height:132px;border-radius:10px;object-fit:cover;background:var(--accent2);display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:26px;flex:none}.book-card{display:flex;gap:14px}.book-body{flex:1}.shop-card{display:grid;grid-template-columns:90px 1fr;gap:12px;background:var(--soft);border:1px solid var(--line);padding:13px;border-radius:15px}.shop-img{width:90px;height:90px;object-fit:cover;border-radius:11px;background:var(--paper);display:flex;align-items:center;justify-content:center;font-size:28px;grid-row:1/5}.shop-info h3{font-family:Inter;font-size:15px}.shop-price{font-size:18px;font-weight:800;margin-top:4px}.shop-actions{grid-column:2;display:flex;gap:6px;flex-wrap:wrap}.color-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:9px}.color-choice{border:2px solid transparent;border-radius:14px;padding:12px 8px;text-align:center;background:var(--soft);font-size:11px;font-weight:700}.color-choice.active{border-color:var(--ink)}.swatch{width:30px;height:30px;border-radius:50%;margin:0 auto 7px}
+.routine-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:10px}.routine-day{border-radius:16px;padding:12px;min-height:260px;background:var(--soft);border-top:6px solid var(--accent)}.routine-day h3{font-family:Inter;font-size:14px;text-align:center;margin-bottom:9px}.routine-item{background:var(--paper);border-radius:11px;padding:8px;margin:7px 0;font-size:11px}.routine-item b{display:block;color:var(--accent)}
+.week-mon{border-color:#b36b83}.week-tue{border-color:#b9922f}.week-wed{border-color:#5f8069}.week-thu{border-color:#4e728c}.week-fri{border-color:#8065a5}.week-sat{border-color:#c06d47}.week-sun{border-color:#71808b}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden}.progress i{display:block;height:100%;background:var(--accent)}
+@media(max-width:850px){.routine-grid{grid-template-columns:repeat(2,1fr)}.metric-grid{grid-template-columns:repeat(2,1fr)}.dashboard-grid,.grid2,.data-grid{grid-template-columns:1fr}.dash-card.full{grid-column:auto}}
+@media(max-width:520px){.app{padding:15px 11px 55px}.card,.dash-card{padding:16px}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.routine-grid{grid-template-columns:1fr}.color-grid{grid-template-columns:repeat(3,1fr)}.brand h1{font-size:27px}.top{align-items:flex-start}}
 </style>
 </head>
 <body>
+<div class="app">
+<header class="top"><div class="brand"><h1 id="app-title">Meu Planner</h1><p id="app-subtitle">Sua vida organizada em um só lugar</p></div><button class="home-btn" onclick="showPanel('inicio')">⌂ Início</button></header>
+<nav class="mainnav" id="mainnav"></nav>
 
-<div class="wrap">
-  <header class="top">
-    <h1>Meu Planner</h1>
-    <p>Calendário, rotina semanal, livros e Bíblia — tudo num só lugar</p>
-  </header>
+<section id="panel-inicio" class="panel active">
+<div class="dashboard-grid">
+<div class="dash-card full"><div class="dash-head"><div><div class="dash-title">Olá! ♡</div><div class="sub" id="today-summary">Hoje</div></div><div class="dash-icon">✦</div></div><div class="metric-grid" id="home-metrics"></div></div>
+<div class="dash-card"><div class="dash-head"><div class="dash-title">🎓 Faculdade</div></div><div class="dash-links"><button onclick="showPanel('grade')">Grade</button><button onclick="showPanel('boletim')">Boletim</button><button onclick="showPanel('horas')">Horas complementares</button><button onclick="showPanel('trabalhos')">Trabalhos</button></div></div>
+<div class="dash-card"><div class="dash-head"><div class="dash-title">♡ Pessoal</div></div><div class="dash-links"><button onclick="showPanel('livros')">Livros</button><button onclick="showPanel('poupanca')">Investimentos</button><button onclick="showPanel('cursinhos')">Cursinhos</button><button onclick="showPanel('biblia')">Bíblia</button><button onclick="showPanel('peso')">Peso & treino</button></div></div>
+<div class="dash-card"><div class="dash-head"><div class="dash-title">✦ Organização</div></div><div class="dash-links"><button onclick="showPanel('calendario')">Calendário</button><button onclick="showPanel('rotina')">Rotina</button><button onclick="showPanel('manutencoes')">Manutenções</button><button onclick="showPanel('compras')">Lista de compras</button><button onclick="showPanel('aniversario')">Meu aniversário</button><button onclick="showPanel('financeiro')">Financeiro</button></div></div>
+<div class="dash-card"><div class="dash-head"><div class="dash-title">Próximos compromissos</div></div><div id="home-events"></div></div>
+</div></section>
 
-  <nav class="tabs" id="main-tabs">
-    <button data-panel="calendario" class="active">Calendário</button>
-    <button data-panel="rotina">Rotina Semanal</button>
-    <button data-panel="grade">Grade Faculdade</button>
-    <button data-panel="boletim">Boletim</button>
-    <button data-panel="trabalhos">Trabalhos</button>
-    <button data-panel="horas">Horas Complementares</button>
-    <button data-panel="financeiro">Financeiro</button>
-    <button data-panel="produtos">Produtos a Caminho</button>
-    <button data-panel="peso">Peso & Academia</button>
-    <button data-panel="manutencoes">Manutenções</button>
-    <button data-panel="livros">Livros</button>
-    <button data-panel="biblia">Bíblia</button>
-    <button data-panel="poupanca">Poupança & Investimentos</button>
-    <button data-panel="cursinhos">Cursinhos</button>
-    <button data-panel="compras">🛒 Lista de Compras</button>
-    <button data-panel="config">⚙️ Configurações</button>
-  </nav>
+<section id="panel-calendario" class="panel"><div class="card"><div class="section-head"><div><h2>Calendário</h2><p>Compromissos, provas e trabalhos.</p></div><button class="btn primary" onclick="openEventModal()">+ Compromisso</button></div><div class="grid2"><div class="field"><label>Data</label><input id="cal-date" type="date"></div><div class="field"><label>Filtro</label><select id="cal-filter"><option value="all">Todos</option><option value="trabalho">Trabalhos</option><option value="prova">Provas</option><option value="rotina">Rotina</option><option value="outro">Outros</option></select></div></div><div id="calendar-list" style="margin-top:15px"></div></div></section>
 
-  <!-- ===================== CALENDARIO ===================== -->
-  <section id="panel-calendario" class="panel active">
-    <div class="card">
-      <div class="cal-toolbar">
-        <div class="nav-group">
-          <button class="icon-btn" id="cal-prev">‹</button>
-          <div class="cal-title" id="cal-title">—</div>
-          <button class="icon-btn" id="cal-next">›</button>
-        </div>
-        <div class="nav-group">
-          <button class="today-btn" id="cal-today">Hoje</button>
-          <div class="view-toggle">
-            <button id="view-week" data-view="week">Semana</button>
-            <button id="view-month" data-view="month" class="active">Mês</button>
-          </div>
-        </div>
-      </div>
-      <div id="cal-body"></div>
-    </div>
-  </section>
+<section id="panel-rotina" class="panel"><div class="card"><div class="section-head"><div><h2>Rotina da semana</h2><p>Os compromissos do calendário aparecem aqui automaticamente. Você também pode adicionar seus horários.</p></div><button class="btn primary" onclick="openRoutineModal()">+ Adicionar horário</button></div><div class="routine-grid" id="routine-grid"></div></div></section>
 
-  <!-- ===================== ROTINA SEMANAL ===================== -->
-  <section id="panel-rotina" class="panel">
-    <div class="card">
-      <div class="rotina-toolbar">
-        <div>
-          <h2 style="font-size:19px;">Rotina desta semana</h2>
-          <div class="modal-sub" id="rotina-week-label" style="margin-bottom:0;">—</div>
-        </div>
-        <div class="nav-group">
-          <button class="icon-btn" id="rotina-prev">‹</button>
-          <button class="today-btn" id="rotina-today">Semana atual</button>
-          <button class="icon-btn" id="rotina-next">›</button>
-          <button class="btn btn-danger" id="rotina-reset">Resetar semana</button>
-        </div>
-      </div>
-      <div class="rotina-grid" id="rotina-grid"></div>
-      <div class="modal-sub" style="margin-top:14px;">
-        Clique num chip (Normal / Sem aula / Mudança / Home-tarde livre) pra marcar o status do dia. "Resetar semana" apaga só as edições e status desta semana, voltando ao modelo padrão.
-      </div>
-    </div>
-  </section>
+<section id="panel-grade" class="panel"><div class="card"><div class="section-head"><div><h2>Grade da Faculdade</h2><p>2º semestre de 2026 · Turma 1N2</p></div></div><div class="tablewrap"><table class="table"><thead><tr><th>Horário</th><th>Segunda</th><th>Terça</th><th>Quarta</th><th>Quinta</th><th>Sexta</th></tr></thead><tbody id="grade-body"></tbody></table></div></div></section>
 
-  <!-- ===================== LIVROS ===================== -->
-  <section id="panel-livros" class="panel">
-    <div class="card">
-      <div class="list-toolbar"><button class="btn btn-primary" id="add-livro">+ Novo livro</button></div>
-      <div id="livros-list"></div>
-    </div>
-  </section>
+<section id="panel-boletim" class="panel"><div class="card"><div class="section-head"><div><h2>Boletim</h2><p>Edite notas, datas das provas e faltas. Matérias finalizadas ficam separadas.</p></div><button class="btn primary" onclick="openSubjectModal()">+ Nova matéria</button></div><h3 style="font-family:Inter;font-size:15px;margin:15px 0 10px">Matérias em andamento</h3><div class="tablewrap"><table class="table"><thead><tr><th>Matéria</th><th>1ª prova</th><th>2ª prova</th><th>3ª prova</th><th>4ª prova</th><th>Faltas</th><th></th></tr></thead><tbody id="boletim-body"></tbody></table></div><h3 style="font-family:Inter;font-size:15px;margin:24px 0 10px">Matérias finalizadas</h3><div id="finished-subjects"></div></div></section>
 
-  <!-- ===================== BIBLIA ===================== -->
-  <section id="panel-biblia" class="panel">
-    <div class="card">
-      <div class="list-toolbar"><button class="btn btn-primary" id="add-biblia">+ Nova anotação</button></div>
-      <div id="biblia-list"></div>
-    </div>
-  </section>
+<section id="panel-trabalhos" class="panel"><div class="card"><div class="section-head"><div><h2>Trabalhos da Faculdade</h2><p>A data de entrega também entra automaticamente no calendário.</p></div><button class="btn primary" onclick="openWorkModal()">+ Novo trabalho</button></div><div id="works-list" class="data-grid"></div></div></section>
+
+<section id="panel-horas" class="panel"><div class="card"><div class="section-head"><div><h2>Horas Complementares</h2><p>Incluindo a categoria de extensão.</p></div><button class="btn primary" onclick="openHoursModal()">+ Registrar atividade</button></div><div class="metric-grid" id="hours-metrics"></div><div class="tablewrap" style="margin-top:15px"><table class="table"><thead><tr><th>Categoria</th><th>Horas</th><th>Data</th><th>Instituição</th><th>Observações</th><th></th></tr></thead><tbody id="hours-body"></tbody></table></div></div></section>
+
+<section id="panel-livros" class="panel"><div class="card"><div class="section-head"><div><h2>Livros</h2><p>Capa, progresso, estrelas e anotações.</p></div><button class="btn primary" onclick="openBookModal()">+ Novo livro</button></div><div id="books-list" class="data-grid"></div></div></section>
+<section id="panel-biblia" class="panel"><div class="card"><div class="section-head"><div><h2>Bíblia</h2><p>Anotações e tarefas no mesmo estilo de janelinha.</p></div><button class="btn primary" onclick="openBibleModal()">+ Nova anotação</button></div><div id="bible-list" class="data-grid"></div></div></section>
+<section id="panel-peso" class="panel"><div class="card"><div class="section-head"><div><h2>Peso & Treino</h2><p>Acompanhe peso, IMC e sua divisão de treino.</p></div><div><button class="btn softbtn" onclick="openWeightModal()">+ Peso</button> <button class="btn primary" onclick="openWorkoutModal()">+ Treino</button></div></div><div class="metric-grid" id="weight-metrics"></div><div class="grid2"><div><h3 style="font-family:Inter;font-size:15px;margin:10px 0">Histórico de peso</h3><div class="tablewrap"><table class="table"><thead><tr><th>Data</th><th>Peso</th><th>Observação</th><th></th></tr></thead><tbody id="weight-body"></tbody></table></div></div><div><h3 style="font-family:Inter;font-size:15px;margin:10px 0">Meu treino</h3><div id="workouts-list"></div></div></div></div></section>
+
+<section id="panel-manutencoes" class="panel"><div class="card"><div class="section-head"><div><h2>Manutenções</h2><p>Quando chegar a data, marque o check e a próxima data é calculada automaticamente.</p></div><button class="btn primary" onclick="openMaintenanceModal()">+ Manutenção</button></div><div id="maintenance-list" class="data-grid"></div></div></section>
+
+<section id="panel-poupanca" class="panel"><div class="card"><div class="section-head"><div><h2>Poupança & Investimentos</h2><p>Objetivos e aplicações.</p></div><button class="btn primary" onclick="openInvestmentModal()">+ Investimento</button></div><div id="investments-list" class="data-grid"></div></div></section>
+<section id="panel-cursinhos" class="panel"><div class="card"><div class="section-head"><div><h2>Cursinhos</h2><p>Organize cursos, horários e objetivos.</p></div><button class="btn primary" onclick="openCourseModal()">+ Cursinho</button></div><div id="courses-list" class="data-grid"></div></div></section>
+<section id="panel-financeiro" class="panel"><div class="card"><div class="section-head"><div><h2>Financeiro</h2><p>Entradas, saídas e observações.</p></div><button class="btn primary" onclick="openFinanceModal()">+ Lançamento</button></div><div class="metric-grid" id="finance-metrics"></div><div id="finance-list" style="margin-top:15px"></div></div></section>
+<section id="panel-compras" class="panel"><div class="card"><div class="section-head"><div><h2>Lista de Compras</h2><p>Foto, link, loja, valor e status — tudo salvo.</p></div><button class="btn primary" onclick="openShoppingModal()">+ Novo item</button></div><div class="metric-grid" id="shopping-metrics"></div><div id="shopping-list" class="data-grid" style="margin-top:15px"></div></div></section>
+
+<section id="panel-aniversario" class="panel"><div class="card"><div class="section-head"><div><h2>Meu Aniversário 🎂</h2><p>Convidados, compras, locais, horários e valores.</p></div><button class="btn primary" onclick="openBirthdayModal()">+ Adicionar item</button></div><div class="grid2"><div class="card" style="box-shadow:none;background:var(--soft)"><h3 style="font-family:Inter;font-size:15px">Informações</h3><div id="birthday-info"></div><button class="btn softbtn" style="margin-top:10px" onclick="editBirthdayInfo()">Editar</button></div><div class="card" style="box-shadow:none;background:var(--soft)"><h3 style="font-family:Inter;font-size:15px">Resumo</h3><div id="birthday-summary"></div></div></div><div id="birthday-list" class="data-grid"></div></div></section>
+
+<section id="panel-config" class="panel"><div class="card"><div class="section-head"><div><h2>Configurações</h2><p>Você pode mudar a aparência e informações do planner quando quiser.</p></div></div><div class="form-grid"><div class="field"><label>Nome do planner</label><input id="cfg-title"></div><div class="field"><label>Subtítulo</label><input id="cfg-subtitle"></div><div class="field"><label>Sua altura (cm) — usada no IMC</label><input id="cfg-height" type="number" step="0.1"></div><div class="field"><label>Meta de peso (kg)</label><input id="cfg-goal" type="number" step="0.1"></div></div><h3 style="font-family:Inter;font-size:15px;margin:22px 0 10px">Cores do aplicativo</h3><div class="color-grid" id="color-grid"></div><div class="actions"><button class="btn primary" onclick="saveConfig()">Salvar configurações</button><button class="btn softbtn" onclick="exportBackup()">💾 Fazer backup</button><label class="btn softbtn">📥 Restaurar backup<input id="import-backup" type="file" accept=".json" style="display:none"></label></div><div class="sub" style="margin-top:18px">Os dados ficam salvos neste dispositivo no armazenamento do navegador. Faça backup para guardar uma cópia ou transferir para outro aparelho.</div></div></section>
+
+<div id="modal-overlay" class="modal-overlay"><div id="modal" class="modal"></div></div>
 </div>
-
-
-  <!-- ===================== GRADE FACULDADE ===================== -->
-  <section id="panel-grade" class="panel">
-    <div class="card">
-      <div class="section-head"><div><h2>Grade Faculdade — 1N2</h2><div class="modal-sub">2º semestre de 2026 · Sala 211</div></div></div>
-      <div class="table-wrap"><table class="planner-table grade-table">
-        <thead><tr><th>Horário</th><th>Segunda</th><th>Terça</th><th>Quarta</th><th>Quinta</th><th>Sexta</th></tr></thead>
-        <tbody>
-          <tr><td>18h20–19h10</td><td>Direito e Sociedade<br><small>Rodrigo Horochowski</small></td><td>Direito e Sociedade<br><small>Rodrigo Horochowski</small></td><td>Economia Política<br><small>Alexandre Faraco</small></td><td>Direito Civil A<br><small>Frederico Glitz</small></td><td>Economia Política<br><small>Alexandre Faraco</small></td></tr>
-          <tr><td>19h10–20h10</td><td>Direito e Sociedade<br><small>Rodrigo Horochowski</small></td><td>Teoria do Direito<br><small>Thiago Hansen</small></td><td>História do Direito A<br><small>Walter</small></td><td>Direito Civil A<br><small>Frederico Glitz</small></td><td>Economia Política<br><small>Alexandre Faraco</small></td></tr>
-          <tr><td>20h10–21h00</td><td>Teoria do Direito<br><small>Thiago Hansen</small></td><td>Direito Civil A<br><small>Frederico Glitz</small></td><td>História do Direito A<br><small>Walter</small></td><td>Vivências em Direitos Humanos<br><small>Olsen</small></td><td>Metodologia do Trabalho<br><small>Ilton</small></td></tr>
-          <tr><td>21h00–21h50</td><td>Teoria do Direito<br><small>Thiago Hansen</small></td><td>—</td><td>Teoria do Estado e C. Política<br><small>Luzardo</small></td><td>Vivências em Direitos Humanos<br><small>Olsen</small></td><td>Metodologia do Trabalho<br><small>Ilton</small></td></tr>
-          <tr><td>21h50–22h40</td><td>—</td><td>—</td><td>Teoria do Estado e C. Política<br><small>Luzardo</small></td><td>—</td><td>Teoria do Estado e C. Política<br><small>Luzardo</small></td></tr>
-        </tbody>
-      </table></div>
-      <div class="note-box">Direito Internacional Privado — Profa. Tatyana Scheila Friedrich: terça, 18h20–20h00, somente para quem é do currículo 2010 e ainda não cursou.</div>
-    </div>
-  </section>
-
-  <!-- ===================== BOLETIM ===================== -->
-  <section id="panel-boletim" class="panel">
-    <div class="card">
-      <div class="section-head"><div><h2>Boletim 2026</h2><div class="modal-sub">Notas, provas e faltas</div></div></div>
-      <div class="table-wrap"><table class="planner-table">
-        <thead><tr><th>Matéria</th><th>1º bim.</th><th>2º bim.</th><th>3º bim.</th><th>4º bim.</th><th>Faltas</th></tr></thead>
-        <tbody id="boletim-body"></tbody>
-      </table></div>
-    </div>
-  </section>
-
-  <!-- ===================== TRABALHOS ===================== -->
-  <section id="panel-trabalhos" class="panel">
-    <div class="card">
-      <div class="section-head"><div><h2>Trabalhos da Faculdade</h2><div class="modal-sub">Prioridade, entrega e checklist</div></div><button class="btn btn-primary" id="add-trabalho">+ Novo trabalho</button></div>
-      <div id="trabalhos-list"></div>
-    </div>
-  </section>
-
-  <!-- ===================== HORAS ===================== -->
-  <section id="panel-horas" class="panel">
-    <div class="card">
-      <div class="section-head"><div><h2>Horas Complementares</h2><div class="modal-sub">Controle das atividades e limites da UFPR</div></div><button class="btn btn-primary" id="add-hora">+ Registrar atividade</button></div>
-      <div class="table-wrap"><table class="planner-table"><thead><tr><th>Categoria</th><th>Horas</th><th>Data</th><th>Instituição</th><th>Observações</th><th></th></tr></thead><tbody id="horas-body"></tbody></table></div>
-      <div class="note-box">Limites de referência da planilha: eletivas 30h/ano e 60h no curso; estágios não obrigatórios 60h/ano e 60h no curso; pesquisa 30h/ano e 60h no curso; representação acadêmica 20h/ano e 40h no curso; eventos/cursos 30h/ano e 60h no curso. A planilha também registra a regra de 20% para EaD e a exigência de pelo menos 48h em extensão.</div>
-    </div>
-  </section>
-
-  <!-- ===================== FINANCEIRO ===================== -->
-  <section id="panel-financeiro" class="panel">
-    <div class="card">
-      <div class="section-head"><div><h2>Financeiro</h2><div class="modal-sub">Entradas, saídas e parcelas</div></div><button class="btn btn-primary" id="add-financeiro">+ Lançamento</button></div>
-      <div class="summary-grid" id="finance-summary"></div>
-      <div class="table-wrap"><table class="planner-table"><thead><tr><th>Data</th><th>Descrição</th><th>Tipo</th><th>Valor</th><th>Parcelas</th><th>Pago?</th><th>Observações</th><th></th></tr></thead><tbody id="finance-body"></tbody></table></div>
-    </div>
-  </section>
-
-  <!-- ===================== PRODUTOS ===================== -->
-  <section id="panel-produtos" class="panel">
-    <div class="card">
-      <div class="section-head"><div><h2>Produtos a Caminho</h2><div class="modal-sub">Pedidos, pagamento e entrega</div></div><button class="btn btn-primary" id="add-produto">+ Produto</button></div>
-      <div id="produtos-list"></div>
-    </div>
-  </section>
-
-  <!-- ===================== PESO ===================== -->
-  <section id="panel-peso" class="panel">
-    <div class="card">
-      <div class="section-head"><div><h2>Peso & Academia</h2><div class="modal-sub">Metas e acompanhamento</div></div><button class="btn btn-primary" id="add-peso">+ Registrar peso</button></div>
-      <div class="metric-grid">
-        <div class="metric-card"><span>Peso atual</span><strong id="peso-atual">—</strong></div>
-        <div class="metric-card"><span>Meta</span><strong id="peso-meta">—</strong></div>
-        <div class="metric-card"><span>Diferença</span><strong id="peso-diff">—</strong></div>
-      </div>
-      <div class="table-wrap"><table class="planner-table"><thead><tr><th>Data</th><th>Peso (kg)</th><th>Treino</th><th>Observações</th><th></th></tr></thead><tbody id="peso-body"></tbody></table></div>
-    </div>
-  </section>
-
-  <!-- ===================== MANUTENÇÕES ===================== -->
-  <section id="panel-manutencoes" class="panel">
-    <div class="card">
-      <div class="section-head"><div><h2>Manutenções</h2><div class="modal-sub">Cuidados pessoais e lembretes periódicos</div></div><button class="btn btn-primary" id="add-manutencao">+ Manutenção</button></div>
-      <div id="manutencoes-list"></div>
-    </div>
-  </section>
-
-  <!-- ===================== POUPANÇA ===================== -->
-  <section id="panel-poupanca" class="panel">
-    <div class="card">
-      <div class="section-head"><div><h2>Poupança & Investimentos</h2><div class="modal-sub">Reservas por objetivo e investimentos</div></div><button class="btn btn-primary" id="add-reserva">+ Reserva</button></div>
-      <div id="reservas-list"></div>
-    </div>
-    <div class="card">
-      <div class="section-head"><h2 style="font-size:19px;">Investimentos</h2><button class="btn btn-primary" id="add-investimento">+ Investimento</button></div>
-      <div id="investimentos-list"></div>
-    </div>
-  </section>
-
-  <!-- ===================== CURSINHOS ===================== -->
-  <section id="panel-cursinhos" class="panel">
-    <div class="card">
-      <div class="section-head"><div><h2>Cursinhos</h2><div class="modal-sub">Violão, vôlei, pintura, redação, línguas e natação</div></div><button class="btn btn-primary" id="add-cursinho">+ Curso</button></div>
-      <div id="cursinhos-list"></div>
-    </div>
-  </section>
-
-  <!-- ===================== MODAL (generic / floating) ===================== -->
-<div class="modal-overlay" id="modal-overlay">
-  <div class="modal-box" id="modal-box"></div>
-
-  <!-- ===================== LISTA DE COMPRAS ===================== -->
-  <section id="panel-compras" class="panel">
-    <div class="card">
-      <div class="section-head">
-        <div>
-          <h2>Lista de Compras</h2>
-          <div class="modal-sub">Guarde foto, link, loja e valor de cada coisa que você quer comprar.</div>
-        </div>
-        <button class="primary-btn" id="add-compra">+ Adicionar compra</button>
-      </div>
-      <div class="metric-grid" style="margin-bottom:16px;">
-        <div class="metric"><div class="metric-label">Itens</div><div class="metric-value" id="compras-count">0</div></div>
-        <div class="metric"><div class="metric-label">Total estimado</div><div class="metric-value" id="compras-total">R$ 0,00</div></div>
-        <div class="metric"><div class="metric-label">Já comprados</div><div class="metric-value" id="compras-comprados">R$ 0,00</div></div>
-      </div>
-      <div id="compras-list" class="shopping-grid"></div>
-    </div>
-  </section>
-
-  <!-- ===================== CONFIGURAÇÕES ===================== -->
-  <section id="panel-config" class="panel">
-    <div class="card config-box">
-      <h2>Configurações</h2>
-      <div class="modal-sub">Você pode alterar as informações básicas sem mexer no código.</div>
-      <div class="form-grid" style="margin-top:16px;">
-        <label>Nome do planner
-          <input id="cfg-title" placeholder="Meu Planner">
-        </label>
-        <label>Subtítulo
-          <input id="cfg-subtitle" placeholder="Tudo em um só lugar">
-        </label>
-        <label>Tema
-          <select id="cfg-theme"><option value="normal">Padrão</option><option value="soft">Mais suave</option></select>
-        </label>
-      </div>
-      <div class="shop-actions" style="margin-top:14px;">
-        <button class="primary-btn" id="save-config">Salvar configurações</button>
-        <button class="subtle-btn" id="export-data">💾 Fazer backup</button>
-        <label class="subtle-btn" style="cursor:pointer;">📥 Restaurar backup
-          <input id="import-data" type="file" accept=".json" style="display:none;">
-        </label>
-      </div>
-      <hr style="border:0;border-top:1px solid var(--line);margin:22px 0;">
-      <h3>Sobre seus dados</h3>
-      <p class="modal-sub">Os dados cadastrados neste planner ficam salvos no armazenamento do navegador/aparelho. O backup permite guardar uma cópia para restaurar depois.</p>
-      <button class="subtle-btn" id="reset-custom">Restaurar dados padrão das abas</button>
-    </div>
-  </section>
-
-</div>
-
 <script>
-/* ============================================================
-   STORAGE (persistent when available, safe in-memory fallback)
-============================================================ */
-const memoryStore = {};
-async function storeGet(key){
-  try{
-    const r = await window.storage.get(key);
-    return r ? JSON.parse(r.value) : null;
-  }catch(e){ return memoryStore[key] ?? null; }
+const KEY='meu-planner:v4:'; const $=id=>document.getElementById(id);
+const get=(k,d)=>{try{const v=localStorage.getItem(KEY+k);return v===null?d:JSON.parse(v)}catch(e){return d}};
+const set=(k,v)=>localStorage.setItem(KEY+k,JSON.stringify(v));
+const oldGet=(k,d)=>{try{const v=localStorage.getItem('meu-planner:'+k);return v===null?d:JSON.parse(v)}catch(e){return d}};
+const save=(k,v)=>set(k,v);
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const money=v=>'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmtDate=s=>{if(!s)return '—';const d=new Date(s+'T00:00:00');return isNaN(d)?s:d.toLocaleDateString('pt-BR')};
+const today=()=>new Date().toISOString().slice(0,10);
+const addDays=(s,n)=>{const d=new Date(s+'T00:00:00');d.setDate(d.getDate()+Number(n||0));return d.toISOString().slice(0,10)};
+const dow=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+const nav=[['inicio','⌂ Início'],['calendario','Calendário'],['rotina','Rotina'],['grade','Faculdade'],['boletim','Boletim'],['trabalhos','Trabalhos'],['horas','Horas'],['livros','Livros'],['biblia','Bíblia'],['peso','Peso & treino'],['manutencoes','Manutenções'],['poupanca','Investimentos'],['cursinhos','Cursinhos'],['financeiro','Financeiro'],['compras','🛒 Compras'],['aniversario','🎂 Aniversário'],['config','⚙️ Configurações']];
+$('mainnav').innerHTML=nav.map(([id,label])=>`<button data-id="${id}" onclick="showPanel('${id}')">${label}</button>`).join('');
+function showPanel(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));$('panel-'+id).classList.add('active');document.querySelectorAll('#mainnav button').forEach(b=>b.classList.toggle('active',b.dataset.id===id)); if(id==='inicio')renderHome(); if(id==='calendario')renderCalendar(); if(id==='rotina')renderRoutine(); if(id==='boletim')renderBoletim(); if(id==='trabalhos')renderWorks(); if(id==='horas')renderHours(); if(id==='livros')renderBooks(); if(id==='biblia')renderBible(); if(id==='peso')renderWeight(); if(id==='manutencoes')renderMaintenance(); if(id==='poupanca')renderInvestments(); if(id==='cursinhos')renderCourses(); if(id==='financeiro')renderFinance(); if(id==='compras')renderShopping(); if(id==='aniversario')renderBirthday(); if(id==='config')renderConfig();}
+
+const modalOverlay=$('modal-overlay'), modal=$('modal'); function openModal(title,sub,body,saveLabel='Salvar'){modal.innerHTML=`<div class="modal-top"><div><h2>${title}</h2>${sub?`<div class="sub">${sub}</div>`:''}</div><button class="close" onclick="closeModal()">×</button></div>${body}<div class="modal-actions"><button class="btn softbtn" onclick="closeModal()">Cancelar</button><button class="btn primary" id="modal-save">${saveLabel}</button></div>`;modalOverlay.classList.add('open');return $('modal-save')}
+function closeModal(){modalOverlay.classList.remove('open');modal.innerHTML=''} modalOverlay.addEventListener('click',e=>{if(e.target===modalOverlay)closeModal()});
+
+// Seed data from the original planner / spreadsheet if the new storage is empty.
+function seed(){
+if(!get('grade',null)) set('grade',[
+['18h20–19h10','Direito e Sociedade<br><small>Rodrigo Horochowski</small>','Direito e Sociedade<br><small>Rodrigo Horochowski</small>','Economia Política<br><small>Alexandre Faraco</small>','Direito Civil A<br><small>Frederico Glitz</small>','Economia Política<br><small>Alexandre Faraco</small>'],
+['19h10–20h10','Direito e Sociedade<br><small>Rodrigo Horochowski</small>','Teoria do Direito<br><small>Thiago Hansen</small>','História do Direito A<br><small>Walter</small>','Direito Civil A<br><small>Frederico Glitz</small>','Economia Política<br><small>Alexandre Faraco</small>'],
+['20h10–21h00','Teoria do Direito<br><small>Thiago Hansen</small>','Direito Civil A<br><small>Frederico Glitz</small>','História do Direito A<br><small>Walter</small>','Vivências em Direitos Humanos<br><small>Olsen</small>','Metodologia do Trabalho<br><small>Ilton</small>'],
+['21h00–21h50','Teoria do Direito<br><small>Thiago Hansen</small>','—','Teoria do Estado e C. Política<br><small>Luzardo</small>','Vivências em Direitos Humanos<br><small>Olsen</small>','Metodologia do Trabalho<br><small>Ilton</small>'],
+['21h50–22h40','—','—','Teoria do Estado e C. Política<br><small>Luzardo</small>','—','Teoria do Estado e C. Política<br><small>Luzardo</small>']]);
+if(!get('subjects',null)) set('subjects',[
+['ACE I','16/abr · 10,0','11/jun · —','—','—'],['Direito Civil A','30/abr · 7,3','25/jun · 8,9','01/out · —','26/nov · —'],['Direito e Sociedade','04/mai · 9,5','15/jun · —','28/set · —','16/nov · —'],['Economia Política','24/abr · 8,6','19/jun · 9,0','09/out · —','13/nov · —'],['História do Direito A','28/mai · 10,0','17/jun · —','07/out · —','11/nov · —'],['Metodologia do Trabalho','15/mai · —','17/ago · —','—','—'],['Teoria do Direito','27/abr · 10,0','22/jun · 8,5','05/out · —','23/nov · —'],['Teoria do Estado','13/mai · 9,0','— · 7,0','—','18/nov · —']].map(r=>({name:r[0],tests:r.slice(1).map(x=>{let p=x.split(' · ');return {date:'',displayDate:p[0],grade:p[1]==='—'?'':p[1]}}),absences:'',finished:false}));
+if(!get('maintenance',null)) set('maintenance',oldGet('manutencoes',[{nome:'Doação de sangue',ultima:'2026-08-29',intervalo:90,regra:'Máx. 3 doações a cada 12 meses'},{nome:'Manutenção da unha',ultima:'2026-09-12',intervalo:20,regra:'A cada ~20 dias'},{nome:'Sobrancelha',ultima:'2026-09-05',intervalo:30,regra:'A cada ~30 dias'}]).map(x=>({name:x.nome,last:x.ultima,interval:x.intervalo,rule:x.regra})));
+if(!get('courses',null)) set('courses',oldGet('cursinhos',['Violão','Vôlei','Pintura','Redação/Escrita Jurídica','Inglês','Espanhol','Italiano','Natação'].map(nome=>({nome}))));
+if(!get('reserves',null)) set('reserves',oldGet('reservas',[{nome:'Aniversário',parcelas:1},{nome:'Festa',parcelas:1},{nome:'Dízimo (mensal)',parcelas:1},{nome:'Formatura',parcelas:12}]));
 }
-async function storeSet(key, value){
-  try{ await window.storage.set(key, JSON.stringify(value)); }
-  catch(e){ memoryStore[key] = value; }
-}
+seed();
 
-/* ============================================================
-   DATE HELPERS
-============================================================ */
-const DOW = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
-const DOW_FULL = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
-const MONTHS = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+function renderHome(){const p=get('peso',[]),last=p.at(-1),subs=get('subjects',[]).filter(x=>!x.finished),works=get('works',[]).filter(x=>x.status!=='done');$('today-summary').textContent=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'});$('home-metrics').innerHTML=`<div class="metric"><span>Peso atual</span><strong>${last?Number(last.value).toFixed(1)+' kg':'—'}</strong></div><div class="metric"><span>Matérias ativas</span><strong>${subs.length}</strong></div><div class="metric"><span>Trabalhos pendentes</span><strong>${works.length}</strong></div><div class="metric"><span>Compras</span><strong>${get('shopping',[]).filter(x=>!x.bought).length}</strong></div>`;const ev=get('events',[]).filter(e=>e.date>=today()).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).slice(0,5);$('home-events').innerHTML=ev.length?ev.map(e=>`<div class="data-card" style="margin:7px 0"><b>${esc(e.title)}</b><div class="meta">${fmtDate(e.date)}${e.time?' · '+e.time:''}</div></div>`).join(''):'<div class="empty">Nenhum compromisso próximo.</div>'}
 
-function pad(n){ return n.toString().padStart(2,'0'); }
-function iso(d){ return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
-function sameDay(a,b){ return iso(a)===iso(b); }
-function addDays(d,n){ const r=new Date(d); r.setDate(r.getDate()+n); return r; }
-function startOfWeek(d){ const r=new Date(d); const day=(r.getDay()+6)%7; r.setDate(r.getDate()-day); r.setHours(0,0,0,0); return r; } // Monday start
-function isoWeekKey(d){
-  const s = startOfWeek(d);
-  return iso(s);
-}
+function renderGrade(){$('grade-body').innerHTML=get('grade',[]).map(r=>`<tr>${r.map((c,i)=>`<td>${i?c:`<b>${c}</b>`}</td>`).join('')}</tr>`).join('')}
 
-const HOLIDAYS = {
-  '2026-09-07':'Independência do Brasil',
-  '2026-10-12':'N. Sra. Aparecida',
-  '2026-11-02':'Finados',
-  '2026-11-15':'Proclamação da República',
-  '2026-11-20':'Consciência Negra',
-  '2026-12-25':'Natal',
-  '2027-01-01':'Confraternização Universal',
-  '2027-02-08':'Carnaval',
-  '2027-02-09':'Carnaval',
-  '2027-03-26':'Sexta-feira Santa',
-  '2027-04-21':'Tiradentes',
-  '2027-05-01':'Dia do Trabalho',
-  '2027-05-27':'Corpus Christi',
-  '2027-09-07':'Independência do Brasil',
-  '2027-10-12':'N. Sra. Aparecida',
-  '2027-11-02':'Finados',
-  '2027-11-15':'Proclamação da República',
-  '2027-11-20':'Consciência Negra',
-  '2027-12-25':'Natal',
-};
+function openEventModal(prefill={}){const s=openModal('Novo compromisso','Ele aparece no calendário e na rotina.',`<div class="form-grid"><div class="field"><label>Título</label><input id="m-title" value="${esc(prefill.title||'')}"></div><div class="field"><label>Tipo</label><select id="m-type"><option value="outro">Outro</option><option value="prova">Prova</option><option value="rotina">Rotina</option><option value="trabalho">Trabalho</option></select></div><div class="field"><label>Data</label><input id="m-date" type="date" value="${prefill.date||today()}"></div><div class="field"><label>Horário</label><input id="m-time" type="time" value="${prefill.time||''}"></div><div class="field full"><label>Observação</label><textarea id="m-note">${esc(prefill.note||'')}</textarea></div></div>`);s.onclick=()=>{const e={id:crypto.randomUUID(),title:$('m-title').value.trim(),type:$('m-type').value,date:$('m-date').value,time:$('m-time').value,note:$('m-note').value};if(!e.title||!e.date)return;const l=get('events',[]);l.push(e);l.sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));set('events',l);closeModal();renderCalendar();renderRoutine();renderHome()}}
+function renderCalendar(){const f=$('cal-filter').value, d=$('cal-date').value;let ev=get('events',[]).filter(e=>(f==='all'||e.type===f)&&(!d||e.date===d));ev.sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));$('calendar-list').innerHTML=ev.length?ev.map((e,i)=>`<div class="data-card" style="margin:8px 0"><b>${esc(e.title)}</b><span class="pill">${esc(e.type)}</span><div class="meta">${fmtDate(e.date)}${e.time?' · '+e.time:''}${e.note?' · '+esc(e.note):''}</div><div class="actions"><button class="smallbtn" onclick="deleteEvent('${e.id}')">Excluir</button></div></div>`).join(''):'<div class="empty">Nenhum compromisso para esse filtro.</div>'}
+function deleteEvent(id){set('events',get('events',[]).filter(e=>e.id!==id));renderCalendar();renderRoutine();renderHome()}
+$('cal-date').value='';$('cal-filter').onchange=renderCalendar;$('cal-date').onchange=renderCalendar;
 
-const RANGE_MIN = new Date(2026,8,1);   // Sep 2026
-const RANGE_MAX = new Date(2027,11,31); // Dec 2027
+function weekStart(){const d=new Date();const n=d.getDay();d.setDate(d.getDate()-(n===0?6:n-1));d.setHours(0,0,0,0);return d}
+function renderRoutine(){const s=weekStart(), days=[];for(let i=0;i<7;i++){const d=new Date(s);d.setDate(s.getDate()+i);days.push(d.toISOString().slice(0,10))}const manual=get('routine',[]);$('routine-grid').innerHTML=days.map((date,i)=>{const events=get('events',[]).filter(e=>e.date===date).sort((a,b)=>(a.time||'').localeCompare(b.time||''));const own=manual.filter(x=>x.date===date).sort((a,b)=>(a.time||'').localeCompare(b.time||''));const items=[...events.map(e=>({time:e.time,title:e.title,source:'cal'})),...own.map(e=>({time:e.time,title:e.title,source:'manual'}))].sort((a,b)=>(a.time||'').localeCompare(b.time||''));return `<div class="routine-day week-${['mon','tue','wed','thu','fri','sat','sun'][i]}"><h3>${dow[(i+1)%7]}<br><span class="meta">${fmtDate(date)}</span></h3>${items.length?items.map(x=>`<div class="routine-item"><b>${x.time||'—'}</b>${esc(x.title)}</div>`).join(''):'<div class="empty">Livre</div>'}<button class="smallbtn" onclick="openRoutineModal('${date}')">+ horário</button></div>`}).join('')}
+function openRoutineModal(date=today()){const s=openModal('Adicionar à rotina','Esse horário fica salvo e aparece na rotina semanal.',`<div class="form-grid"><div class="field"><label>Dia</label><input id="r-date" type="date" value="${date}"></div><div class="field"><label>Horário</label><input id="r-time" type="time" value="07:00"></div><div class="field full"><label>Atividade</label><input id="r-title" placeholder="Ex.: Vôlei"></div></div>`);s.onclick=()=>{const l=get('routine',[]);l.push({id:crypto.randomUUID(),date:$('r-date').value,time:$('r-time').value,title:$('r-title').value.trim()});set('routine',l);closeModal();renderRoutine();renderHome()}}
 
-/* ============================================================
-   MODAL
-============================================================ */
-const overlay = document.getElementById('modal-overlay');
-const modalBox = document.getElementById('modal-box');
-function openModal(html){
-  modalBox.innerHTML = `<button class="modal-close" id="modal-close-btn">&times;</button>` + html;
-  overlay.classList.add('open');
-  document.getElementById('modal-close-btn').onclick = closeModal;
-}
-function closeModal(){ overlay.classList.remove('open'); modalBox.innerHTML=''; }
-overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closeModal(); });
+function renderBoletim(){const s=get('subjects',[]), active=s.filter(x=>!x.finished), fin=s.filter(x=>x.finished);$('boletim-body').innerHTML=active.length?active.map((x,i)=>`<tr><td><b>${esc(x.name)}</b></td>${x.tests.map((t,j)=>`<td><input value="${esc(t.grade||'')}" placeholder="Nota"><input type="date" value="${t.date||''}" onchange="updateTest(${s.indexOf(x)},${j},'date',this.value)"><button class="smallbtn" onclick="updateTest(${s.indexOf(x)},${j},'grade',this.previousElementSibling.previousElementSibling.value)">Salvar</button></td>`).join('')}<td><input value="${esc(x.absences||'')}" onchange="updateSubject(${s.indexOf(x)},'absences',this.value)"></td><td><button class="smallbtn" onclick="finishSubject(${s.indexOf(x)})">Finalizar</button><button class="smallbtn" onclick="editSubject(${s.indexOf(x)})">Editar</button></td></tr>`).join(''):'<tr><td colspan="7" class="empty">Nenhuma matéria ativa.</td></tr>';$('finished-subjects').innerHTML=fin.length?fin.map(x=>`<div class="data-card" style="margin:8px 0"><b>${esc(x.name)}</b><div class="meta">${x.tests.map((t,j)=>`Prova ${j+1}: ${t.date?fmtDate(t.date):t.displayDate||'—'} · Nota: ${t.grade||'—'}`).join('<br>')}<br>Faltas: ${esc(x.absences||'0')}</div><div class="actions"><button class="smallbtn" onclick="reopenSubject(${s.indexOf(x)})">Reabrir</button></div></div>`).join(''):'<div class="empty">Nenhuma matéria finalizada.</div>'}
+function updateTest(i,j,k,v){const s=get('subjects',[]);s[i].tests[j][k]=v;set('subjects',s);renderBoletim();renderHome()}
+function updateSubject(i,k,v){const s=get('subjects',[]);s[i][k]=v;set('subjects',s);renderBoletim()}
+function finishSubject(i){const s=get('subjects',[]);s[i].finished=true;set('subjects',s);renderBoletim();renderHome()}
+function reopenSubject(i){const s=get('subjects',[]);s[i].finished=false;set('subjects',s);renderBoletim()}
+function openSubjectModal(idx=null){const s=get('subjects',[]),x=idx===null?{name:'',tests:[{},{},{},{}],absences:'',finished:false}:s[idx];const saveBtn=openModal(idx===null?'Nova matéria':'Editar matéria','Você poderá editar depois.',`<div class="form-grid"><div class="field full"><label>Matéria</label><input id="sm-name" value="${esc(x.name)}"></div>${x.tests.map((t,j)=>`<div class="field"><label>Prova ${j+1} — data</label><input id="sm-d${j}" type="date" value="${t.date||''}"></div><div class="field"><label>Prova ${j+1} — nota</label><input id="sm-g${j}" type="number" step="0.1" value="${t.grade||''}"></div>`).join('')}<div class="field"><label>Faltas</label><input id="sm-f" value="${esc(x.absences||'')}"></div></div>`);saveBtn.onclick=()=>{const o={name:$('sm-name').value.trim(),tests:[0,1,2,3].map(j=>({date:$('sm-d'+j).value,grade:$('sm-g'+j).value,displayDate:''})),absences:$('sm-f').value,finished:x.finished||false};if(!o.name)return;if(idx===null)s.push(o);else s[idx]=o;set('subjects',s);closeModal();renderBoletim()}}
+function editSubject(i){openSubjectModal(i)}
 
-/* ============================================================
-   TABS
-============================================================ */
-document.querySelectorAll('nav.tabs button').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('panel-'+btn.dataset.panel).classList.add('active');
-  });
-});
+function renderWorks(){const l=get('works',[]);$('works-list').innerHTML=l.length?l.map((x,i)=>`<div class="data-card"><h3>${esc(x.title)}</h3><div class="meta">${esc(x.subject||'')} · Entrega: ${fmtDate(x.date)} · Prioridade: ${esc(x.priority||'Média')}</div><div class="meta">${esc(x.notes||'')}</div><div class="actions"><button class="smallbtn" onclick="toggleWork(${i})">${x.status==='done'?'Reabrir':'✓ Concluir'}</button><button class="smallbtn" onclick="openWorkModal(${i})">Editar</button><button class="smallbtn" onclick="deleteWork(${i})">Excluir</button></div></div>`).join(''):'<div class="empty">Nenhum trabalho cadastrado.</div>'}
+function openWorkModal(idx=null){const l=get('works',[]),x=idx===null?{}:l[idx];const s=openModal(idx===null?'Novo trabalho':'Editar trabalho','A mesma janelinha usada nas anotações.',`<div class="form-grid"><div class="field full"><label>Trabalho / matéria</label><input id="w-title" value="${esc(x.title||'')}"></div><div class="field"><label>Matéria</label><input id="w-sub" value="${esc(x.subject||'')}"></div><div class="field"><label>Prioridade</label><select id="w-pr"><option ${x.priority==='Baixa'?'selected':''}>Baixa</option><option ${!x.priority||x.priority==='Média'?'selected':''}>Média</option><option ${x.priority==='Alta'?'selected':''}>Alta</option></select></div><div class="field"><label>Data de entrega</label><input id="w-date" type="date" value="${x.date||''}"></div><div class="field full"><label>Checklist (uma tarefa por linha)</label><textarea id="w-tasks">${esc((x.tasks||[]).map(t=>t.text||t).join('\n'))}</textarea></div><div class="field full"><label>Observações</label><textarea id="w-notes">${esc(x.notes||'')}</textarea></div></div>`);s.onclick=()=>{const o={id:x.id||crypto.randomUUID(),title:$('w-title').value.trim(),subject:$('w-sub').value,priority:$('w-pr').value,date:$('w-date').value,tasks:$('w-tasks').value.split('\n').map(v=>v.trim()).filter(Boolean).map(text=>({text,done:false})),notes:$('w-notes').value,status:x.status||'open'};if(!o.title)return;if(idx===null)l.push(o);else l[idx]=o;set('works',l);if(o.date){const ev=get('events',[]);const existing=ev.find(e=>e.workId===o.id);if(existing){existing.date=o.date;existing.title='Entrega: '+o.title;existing.type='trabalho'}else ev.push({id:crypto.randomUUID(),workId:o.id,title:'Entrega: '+o.title,type:'trabalho',date:o.date,time:'23:59',note:o.subject});set('events',ev)}closeModal();renderWorks();renderCalendar();renderHome()}}
+function toggleWork(i){const l=get('works',[]);l[i].status=l[i].status==='done'?'open':'done';set('works',l);renderWorks();renderHome()}
+function deleteWork(i){const l=get('works',[]),id=l[i].id;set('works',l.filter((_,n)=>n!==i));set('events',get('events',[]).filter(e=>e.workId!==id));renderWorks();renderCalendar();renderHome()}
 
-/* ============================================================
-   CALENDAR
-============================================================ */
-let currentView = 'month';
-let cursorDate = new Date(); // reference date shown
-if(cursorDate < RANGE_MIN) cursorDate = new Date(RANGE_MIN);
-if(cursorDate > RANGE_MAX) cursorDate = new Date(RANGE_MAX);
+function renderHours(){const l=get('hours',[]);const ext=l.filter(x=>x.category.toLowerCase().includes('extens')).reduce((a,x)=>a+Number(x.hours||0),0),total=l.reduce((a,x)=>a+Number(x.hours||0),0);$('hours-metrics').innerHTML=`<div class="metric"><span>Total</span><strong>${total}h</strong></div><div class="metric"><span>Extensão</span><strong>${ext}h</strong></div><div class="metric"><span>Meta de extensão</span><strong>48h</strong></div><div class="metric"><span>Faltam</span><strong>${Math.max(0,48-ext)}h</strong></div>`;$('hours-body').innerHTML=l.length?l.map((x,i)=>`<tr><td>${esc(x.category)}</td><td>${esc(x.hours)}h</td><td>${fmtDate(x.date)}</td><td>${esc(x.institution||'—')}</td><td>${esc(x.notes||'')}</td><td><button class="smallbtn" onclick="deleteHour(${i})">Excluir</button></td></tr>`).join(''):'<tr><td colspan="6" class="empty">Nenhuma atividade registrada.</td></tr>'}
+function openHoursModal(){const s=openModal('Registrar atividade','Inclua extensão quando a atividade for de extensão.',`<div class="form-grid"><div class="field"><label>Categoria</label><select id="h-cat"><option>Extensão</option><option>Eventos/Cursos</option><option>Pesquisa</option><option>Estágio não obrigatório</option><option>Representação acadêmica</option><option>Eletivas</option><option>Outro</option></select></div><div class="field"><label>Horas</label><input id="h-hours" type="number" step="0.5"></div><div class="field"><label>Data</label><input id="h-date" type="date" value="${today()}"></div><div class="field"><label>Instituição</label><input id="h-inst"></div><div class="field full"><label>Observações</label><textarea id="h-notes"></textarea></div></div>`);s.onclick=()=>{const l=get('hours',[]);l.push({category:$('h-cat').value,hours:$('h-hours').value,date:$('h-date').value,institution:$('h-inst').value,notes:$('h-notes').value});set('hours',l);closeModal();renderHours()}}
+function deleteHour(i){const l=get('hours',[]);l.splice(i,1);set('hours',l);renderHours()}
 
-async function getEvents(dateIso){
-  const ev = await storeGet('events:'+dateIso);
-  return ev || [];
-}
-async function setEvents(dateIso, list){
-  await storeSet('events:'+dateIso, list);
-}
+function renderBooks(){const l=get('books',[]);$('books-list').innerHTML=l.length?l.map((x,i)=>`<div class="data-card"><div class="book-card">${x.cover?`<img class="cover" src="${x.cover}" alt="Capa">`:`<div class="cover">📖</div>`}<div class="book-body"><h3>${esc(x.title)}</h3><div class="meta">${esc(x.author||'Autor não informado')}</div><div>${[1,2,3,4,5].map(n=>`<button class="star ${n<=Number(x.rating||0)?'on':''}" onclick="rateBook(${i},${n})">★</button>`).join('')}</div><div class="meta">${x.pages?`Página ${x.current||0} de ${x.pages}`:'Sem páginas cadastradas'}</div><div class="progress" style="margin-top:7px"><i style="width:${x.pages?Math.min(100,Number(x.current||0)/Number(x.pages)*100):0}%"></i></div><div class="actions"><button class="smallbtn" onclick="openBookModal(${i})">Editar</button><button class="smallbtn" onclick="deleteBook(${i})">Excluir</button></div></div></div></div>`).join(''):'<div class="empty">Nenhum livro cadastrado.</div>'}
+function openBookModal(idx=null){const l=get('books',[]),x=idx===null?{}:l[idx];const s=openModal(idx===null?'Novo livro':'Editar livro','Você pode colocar a foto da capa.',`<div class="form-grid"><div class="field full"><label>Título</label><input id="b-title" value="${esc(x.title||'')}"></div><div class="field"><label>Autor</label><input id="b-author" value="${esc(x.author||'')}"></div><div class="field"><label>Página atual</label><input id="b-current" type="number" value="${x.current||0}"></div><div class="field"><label>Total de páginas</label><input id="b-pages" type="number" value="${x.pages||''}"></div><div class="field full"><label>Capa</label><input id="b-cover" type="file" accept="image/*"></div></div>`);s.onclick=()=>{const finish=cover=>{const o={id:x.id||crypto.randomUUID(),title:$('b-title').value.trim(),author:$('b-author').value,current:$('b-current').value,pages:$('b-pages').value,rating:x.rating||0,cover:cover??x.cover||''};if(!o.title)return;if(idx===null)l.push(o);else l[idx]=o;set('books',l);closeModal();renderBooks()};const f=$('b-cover').files[0];if(f){const r=new FileReader();r.onload=()=>finish(r.result);r.readAsDataURL(f)}else finish(null)}}
+function rateBook(i,n){const l=get('books',[]);l[i].rating=n;set('books',l);renderBooks()}function deleteBook(i){const l=get('books',[]);l.splice(i,1);set('books',l);renderBooks()}
 
-async function renderCalendar(){
-  document.getElementById('cal-title').textContent =
-    currentView==='month'
-      ? `${MONTHS[cursorDate.getMonth()]} ${cursorDate.getFullYear()}`
-      : weekRangeLabel(cursorDate);
-  const body = document.getElementById('cal-body');
-  body.innerHTML = '';
-  if(currentView==='month') await renderMonth(body);
-  else await renderWeek(body);
-}
+function renderBible(){const l=get('bible',oldGet('biblia',[]).map(x=>({title:x.titulo,ref:x.pagina,notes:x.notas,tasks:x.tasks||[]})));set('bible',l);$('bible-list').innerHTML=l.length?l.map((x,i)=>`<div class="data-card"><h3>${esc(x.title)}</h3><div class="meta">${esc(x.ref||'')}</div><p class="meta">${esc(x.notes||'')}</p><div class="actions"><button class="smallbtn" onclick="openBibleModal(${i})">Abrir / editar</button><button class="smallbtn" onclick="deleteBible(${i})">Excluir</button></div></div>`).join(''):'<div class="empty">Nenhuma anotação ainda.</div>'}
+function openBibleModal(idx=null){const l=get('bible',[]),x=idx===null?{tasks:[]}:l[idx];const s=openModal(idx===null?'Nova anotação':'Editar anotação','Sua janelinha para anotações e tarefas.',`<div class="form-grid"><div class="field full"><label>Título</label><input id="bi-title" value="${esc(x.title||'')}"></div><div class="field full"><label>Referência</label><input id="bi-ref" value="${esc(x.ref||'')}"></div><div class="field full"><label>Notas</label><textarea id="bi-notes">${esc(x.notes||'')}</textarea></div><div class="field full"><label>Tarefas / aplicações (uma por linha)</label><textarea id="bi-tasks">${esc((x.tasks||[]).map(t=>t.text||t).join('\n'))}</textarea></div></div>`);s.onclick=()=>{const o={title:$('bi-title').value.trim(),ref:$('bi-ref').value,notes:$('bi-notes').value,tasks:$('bi-tasks').value.split('\n').filter(Boolean).map(text=>({text,done:false}))};if(!o.title)return;if(idx===null)l.push(o);else l[idx]=o;set('bible',l);closeModal();renderBible()}}
+function deleteBible(i){const l=get('bible',[]);l.splice(i,1);set('bible',l);renderBible()}
 
-function weekRangeLabel(d){
-  const s = startOfWeek(d); const e = addDays(s,6);
-  const sameMonth = s.getMonth()===e.getMonth();
-  return sameMonth
-    ? `${s.getDate()}–${e.getDate()} de ${MONTHS[s.getMonth()]}`
-    : `${s.getDate()} ${MONTHS[s.getMonth()].slice(0,3)} – ${e.getDate()} ${MONTHS[e.getMonth()].slice(0,3)}`;
-}
+function bmi(){const p=get('weight',[]),h=Number(get('height',163))/100,w=p.at(-1)?Number(p.at(-1).value):0;return w&&h? w/(h*h):0}
+function renderWeight(){const p=get('weight',[]),last=p.at(-1),goal=Number(get('goal',64)),b=bmi();$('weight-metrics').innerHTML=`<div class="metric"><span>Peso atual</span><strong>${last?Number(last.value).toFixed(1)+' kg':'—'}</strong></div><div class="metric"><span>Meta</span><strong>${goal?goal.toFixed(1)+' kg':'—'}</strong></div><div class="metric"><span>IMC</span><strong>${b?b.toFixed(1):'—'}</strong></div><div class="metric"><span>Diferença</span><strong>${last?(Number(last.value)-goal).toFixed(1)+' kg':'—'}</strong></div>`;$('weight-body').innerHTML=p.length?p.map((x,i)=>`<tr><td>${fmtDate(x.date)}</td><td>${Number(x.value).toFixed(1)} kg</td><td>${esc(x.note||'')}</td><td><button class="smallbtn" onclick="deleteWeight(${i})">Excluir</button></td></tr>`).join(''):'<tr><td colspan="4" class="empty">Nenhum peso registrado.</td></tr>';$('workouts-list').innerHTML=get('workouts',[]).length?get('workouts',[]).map((x,i)=>`<div class="data-card" style="margin:7px 0"><h3>${esc(x.muscle)} — ${esc(x.day||'')}</h3><div class="meta">${esc(x.exercise)} · ${esc(x.sets||'')} séries · ${esc(x.reps||'')} repetições</div><div class="meta">${esc(x.note||'')}</div><div class="actions"><button class="smallbtn" onclick="openWorkoutModal(${i})">Editar</button><button class="smallbtn" onclick="deleteWorkout(${i})">Excluir</button></div></div>`).join(''):'<div class="empty">Adicione sua divisão de treino (ex.: Glúteo, Braço, etc.).</div>'}
+function openWeightModal(){const s=openModal('Registrar peso','O IMC é calculado usando a altura das configurações.',`<div class="form-grid"><div class="field"><label>Data</label><input id="pw-date" type="date" value="${today()}"></div><div class="field"><label>Peso (kg)</label><input id="pw-value" type="number" step="0.1"></div><div class="field full"><label>Observação</label><input id="pw-note"></div></div>`);s.onclick=()=>{const l=get('weight',[]);l.push({date:$('pw-date').value,value:$('pw-value').value,note:$('pw-note').value});l.sort((a,b)=>a.date.localeCompare(b.date));set('weight',l);closeModal();renderWeight();renderHome()}}
+function deleteWeight(i){const l=get('weight',[]);l.splice(i,1);set('weight',l);renderWeight();renderHome()}
+function openWorkoutModal(idx=null){const l=get('workouts',[]),x=idx===null?{}:l[idx];const s=openModal(idx===null?'Adicionar treino':'Editar treino','Monte seu treino por dia e grupo muscular.',`<div class="form-grid"><div class="field"><label>Dia</label><select id="wo-day"><option>Segunda</option><option>Terça</option><option>Quarta</option><option>Quinta</option><option>Sexta</option><option>Sábado</option><option>Domingo</option></select></div><div class="field"><label>Grupo muscular</label><input id="wo-muscle" value="${esc(x.muscle||'Glúteo')}"></div><div class="field full"><label>Exercício</label><input id="wo-exercise" value="${esc(x.exercise||'')}"></div><div class="field"><label>Séries</label><input id="wo-sets" value="${esc(x.sets||'')}"></div><div class="field"><label>Repetições</label><input id="wo-reps" value="${esc(x.reps||'')}"></div><div class="field full"><label>Observação</label><textarea id="wo-note">${esc(x.note||'')}</textarea></div></div>`);if(x.day)$('wo-day').value=x.day;s.onclick=()=>{const o={day:$('wo-day').value,muscle:$('wo-muscle').value,exercise:$('wo-exercise').value,sets:$('wo-sets').value,reps:$('wo-reps').value,note:$('wo-note').value};if(idx===null)l.push(o);else l[idx]=o;set('workouts',l);closeModal();renderWeight()}}
+function deleteWorkout(i){const l=get('workouts',[]);l.splice(i,1);set('workouts',l);renderWeight()}
 
-async function renderMonth(body){
-  const grid = document.createElement('div');
-  grid.className = 'month-grid';
-  DOW.slice(1).concat(DOW[0]).forEach(d=>{
-    const el = document.createElement('div'); el.className='dow'; el.textContent=d; grid.appendChild(el);
-  });
-  const year = cursorDate.getFullYear(), month = cursorDate.getMonth();
-  const first = new Date(year, month, 1);
-  const startOffset = (first.getDay()+6)%7; // Monday=0
-  const gridStart = addDays(first, -startOffset);
-  const today = new Date();
-  for(let i=0;i<42;i++){
-    const d = addDays(gridStart, i);
-    const cell = document.createElement('div');
-    cell.className = 'day-cell';
-    if(d.getMonth()!==month) cell.classList.add('other-month');
-    if(sameDay(d,today)) cell.classList.add('today');
-    const key = iso(d);
-    if(HOLIDAYS[key]) cell.classList.add('holiday');
-    cell.innerHTML = `<span class="day-num">${d.getDate()}</span>` +
-      (HOLIDAYS[key] ? `<span class="day-holiday-label">${HOLIDAYS[key]}</span>` : '');
-    const events = await getEvents(key);
-    if(events.length){
-      const wrap = document.createElement('div'); wrap.className='day-events';
-      events.slice(0,2).forEach(ev=>{
-        const c = document.createElement('div'); c.className='day-event-chip';
-        c.textContent = (ev.time?ev.time+' · ':'') + ev.title;
-        wrap.appendChild(c);
-      });
-      if(events.length>2){
-        const m = document.createElement('div'); m.className='day-more'; m.textContent = `+${events.length-2} mais`;
-        wrap.appendChild(m);
-      }
-      cell.appendChild(wrap);
-    }
-    cell.addEventListener('click', ()=> openDayModal(d));
-    grid.appendChild(cell);
-  }
-  body.appendChild(grid);
-}
+function renderMaintenance(){const l=get('maintenance',[]),t=today();$('maintenance-list').innerHTML=l.length?l.map((x,i)=>{const next=addDays(x.last,x.interval),due=next<=t;return `<div class="data-card"><h3>${esc(x.name)}</h3><div class="meta">Última vez: ${fmtDate(x.last)} · a cada ${x.interval} dias</div><div style="margin-top:9px"><span class="pill ${due?'due':'ok'}">${due?'⚠️ Está na hora':'Próxima: '+fmtDate(next)}</span></div><div class="meta">${esc(x.rule||'')}</div><div class="actions"><button class="smallbtn" onclick="checkMaintenance(${i})">☐ Fiz hoje</button><button class="smallbtn" onclick="openMaintenanceModal(${i})">Editar</button><button class="smallbtn" onclick="deleteMaintenance(${i})">Excluir</button></div></div>`}).join(''):'<div class="empty">Nenhuma manutenção cadastrada.</div>'}
+function checkMaintenance(i){const l=get('maintenance',[]);l[i].last=today();set('maintenance',l);renderMaintenance()}
+function openMaintenanceModal(idx=null){const l=get('maintenance',[]),x=idx===null?{}:l[idx];const s=openModal(idx===null?'Nova manutenção':'Editar manutenção','O check atualiza a última data e calcula a próxima.',`<div class="form-grid"><div class="field"><label>Atividade</label><input id="mt-name" value="${esc(x.name||'')}"></div><div class="field"><label>Intervalo (dias)</label><input id="mt-int" type="number" value="${x.interval||30}"></div><div class="field"><label>Última vez</label><input id="mt-last" type="date" value="${x.last||today()}"></div><div class="field"><label>Regra</label><input id="mt-rule" value="${esc(x.rule||'')}"></div></div>`);s.onclick=()=>{const o={name:$('mt-name').value,interval:Number($('mt-int').value),last:$('mt-last').value,rule:$('mt-rule').value};if(idx===null)l.push(o);else l[idx]=o;set('maintenance',l);closeModal();renderMaintenance()}}
+function deleteMaintenance(i){const l=get('maintenance',[]);l.splice(i,1);set('maintenance',l);renderMaintenance()}
 
-async function renderWeek(body){
-  const start = startOfWeek(cursorDate);
-  const days = [...Array(7)].map((_,i)=>addDays(start,i));
-  const grid = document.createElement('div');
-  grid.className = 'week-grid';
+function renderInvestments(){const l=get('investments',[]);$('investments-list').innerHTML=l.length?l.map((x,i)=>`<div class="data-card"><h3>${esc(x.type)}</h3><div class="meta">${money(x.value)} · ${esc(x.return||'')}% a.a. · Aplicação: ${fmtDate(x.date)}</div><div class="meta">Resgate: ${fmtDate(x.withdraw)} · ${esc(x.note||'')}</div><div class="actions"><button class="smallbtn" onclick="openInvestmentModal(${i})">Editar</button><button class="smallbtn" onclick="deleteInvestment(${i})">Excluir</button></div></div>`).join(''):'<div class="empty">Nenhum investimento.</div>'}
+function openInvestmentModal(idx=null){const l=get('investments',[]),x=idx===null?{}:l[idx];const s=openModal(idx===null?'Novo investimento':'Editar investimento','Poupança, CDB e outros.',`<div class="form-grid"><div class="field"><label>Tipo</label><input id="iv-type" value="${esc(x.type||'')}"></div><div class="field"><label>Valor (R$)</label><input id="iv-value" type="number" step="0.01" value="${x.value||''}"></div><div class="field"><label>Rendimento (% a.a.)</label><input id="iv-return" value="${esc(x.return||'')}"></div><div class="field"><label>Aplicação</label><input id="iv-date" type="date" value="${x.date||''}"></div><div class="field"><label>Resgate</label><input id="iv-withdraw" type="date" value="${x.withdraw||''}"></div><div class="field full"><label>Observação</label><textarea id="iv-note">${esc(x.note||'')}</textarea></div></div>`);s.onclick=()=>{const o={type:$('iv-type').value,value:$('iv-value').value,return:$('iv-return').value,date:$('iv-date').value,withdraw:$('iv-withdraw').value,note:$('iv-note').value};if(idx===null)l.push(o);else l[idx]=o;set('investments',l);closeModal();renderInvestments()}}
+function deleteInvestment(i){const l=get('investments',[]);l.splice(i,1);set('investments',l);renderInvestments()}
 
-  // header row
-  grid.appendChild(document.createElement('div')); // corner
-  const today = new Date();
-  days.forEach(d=>{
-    const h = document.createElement('div');
-    h.className = 'week-head-cell' + (sameDay(d,today)?' today':'');
-    const key = iso(d);
-    h.innerHTML = `<span class="wd">${DOW[d.getDay()]}${HOLIDAYS[key]?' 🎉':''}</span><span class="num">${d.getDate()}</span>`;
-    grid.appendChild(h);
-  });
+function renderCourses(){const l=get('courses',[]);$('courses-list').innerHTML=l.length?l.map((x,i)=>`<div class="data-card"><h3>${esc(x.nome||x.name)}</h3><div class="meta">${esc(x.status||'Planejado')} · ${esc(x.horario||x.schedule||'Horário não definido')} · ${esc(x.onde||x.where||'')}</div><div class="meta">${esc(x.objetivo||x.goal||'')} ${x.custo?'· '+money(x.custo)+'/mês':''}</div><div class="actions"><button class="smallbtn" onclick="openCourseModal(${i})">Editar</button><button class="smallbtn" onclick="deleteCourse(${i})">Excluir</button></div></div>`).join(''):'<div class="empty">Nenhum cursinho cadastrado.</div>'}
+function openCourseModal(idx=null){const l=get('courses',[]),x=idx===null?{}:l[idx];const s=openModal(idx===null?'Novo cursinho':'Editar cursinho','Curso, horário e objetivo.',`<div class="form-grid"><div class="field"><label>Curso</label><input id="c-name" value="${esc(x.nome||x.name||'')}"></div><div class="field"><label>Status</label><input id="c-status" value="${esc(x.status||'Planejado')}"></div><div class="field"><label>Dia / horário</label><input id="c-schedule" value="${esc(x.horario||'')}"></div><div class="field"><label>Onde</label><input id="c-where" value="${esc(x.onde||'')}"></div><div class="field"><label>Custo mensal</label><input id="c-cost" type="number" step="0.01" value="${x.custo||''}"></div><div class="field full"><label>Objetivo</label><textarea id="c-goal">${esc(x.objetivo||'')}</textarea></div></div>`);s.onclick=()=>{const o={nome:$('c-name').value,status:$('c-status').value,horario:$('c-schedule').value,onde:$('c-where').value,custo:$('c-cost').value,objetivo:$('c-goal').value};if(idx===null)l.push(o);else l[idx]=o;set('courses',l);closeModal();renderCourses()}}
+function deleteCourse(i){const l=get('courses',[]);l.splice(i,1);set('courses',l);renderCourses()}
 
-  const hours = [...Array(18)].map((_,i)=>i+6); // 6h .. 23h
-  const dayEventsCache = {};
-  for(const d of days){ dayEventsCache[iso(d)] = await getEvents(iso(d)); }
+function renderFinance(){const l=get('finance',[]),en=l.filter(x=>x.type==='Entrada').reduce((a,x)=>a+Number(x.value||0),0),sa=l.filter(x=>x.type==='Saída').reduce((a,x)=>a+Number(x.value||0),0);$('finance-metrics').innerHTML=`<div class="metric"><span>Entradas</span><strong>${money(en)}</strong></div><div class="metric"><span>Saídas</span><strong>${money(sa)}</strong></div><div class="metric"><span>Saldo</span><strong>${money(en-sa)}</strong></div><div class="metric"><span>Lançamentos</span><strong>${l.length}</strong></div>`;$('finance-list').innerHTML=l.length?l.map((x,i)=>`<div class="data-card" style="margin:7px 0"><b>${esc(x.desc)}</b><span class="pill">${esc(x.type)}</span><div class="meta">${fmtDate(x.date)} · ${money(x.value)} · ${esc(x.paid||'Não pago')}</div><div class="meta">${esc(x.note||'')}</div><div class="actions"><button class="smallbtn" onclick="deleteFinance(${i})">Excluir</button></div></div>`).join(''):'<div class="empty">Nenhum lançamento.</div>'}
+function openFinanceModal(){const s=openModal('Novo lançamento','',`<div class="form-grid"><div class="field"><label>Data</label><input id="f-date" type="date" value="${today()}"></div><div class="field"><label>Descrição</label><input id="f-desc"></div><div class="field"><label>Tipo</label><select id="f-type"><option>Saída</option><option>Entrada</option></select></div><div class="field"><label>Valor</label><input id="f-value" type="number" step="0.01"></div><div class="field"><label>Pago?</label><select id="f-paid"><option>Não</option><option>Sim</option></select></div><div class="field full"><label>Observação</label><textarea id="f-note"></textarea></div></div>`);s.onclick=()=>{const l=get('finance',[]);l.push({date:$('f-date').value,desc:$('f-desc').value,type:$('f-type').value,value:$('f-value').value,paid:$('f-paid').value,note:$('f-note').value});set('finance',l);closeModal();renderFinance()}}
+function deleteFinance(i){const l=get('finance',[]);l.splice(i,1);set('finance',l);renderFinance()}
 
-  hours.forEach(hr=>{
-    const lbl = document.createElement('div');
-    lbl.className='hour-label';
-    lbl.textContent = `${pad(hr)}h`;
-    grid.appendChild(lbl);
-    days.forEach(d=>{
-      const cell = document.createElement('div');
-      cell.className='hour-cell';
-      const key = iso(d);
-      const evs = dayEventsCache[key].filter(e=> parseInt((e.time||'0:0').split(':')[0]) === hr);
-      evs.forEach(ev=>{
-        const chip = document.createElement('div');
-        chip.className='week-event';
-        chip.textContent = ev.title;
-        cell.appendChild(chip);
-      });
-      cell.addEventListener('click', (e)=>{
-        if(e.target===cell) openEventQuickAdd(d, hr);
-      });
-      grid.appendChild(cell);
-    });
-  });
-  body.appendChild(grid);
-}
+function renderShopping(){const l=get('shopping',oldGet('compras',[]).map(x=>({name:x.nome,value:x.valor,where:x.onde,link:x.link,category:x.categoria,note:x.obs,status:x.status,photo:x.foto,bought:String(x.status||'').toLowerCase()==='comprado'})));set('shopping',l);const total=l.reduce((a,x)=>a+Number(x.value||0),0),b=l.filter(x=>x.bought).reduce((a,x)=>a+Number(x.value||0),0);$('shopping-metrics').innerHTML=`<div class="metric"><span>Itens</span><strong>${l.length}</strong></div><div class="metric"><span>Total</span><strong>${money(total)}</strong></div><div class="metric"><span>Já comprado</span><strong>${money(b)}</strong></div><div class="metric"><span>Falta</span><strong>${money(total-b)}</strong></div>`;$('shopping-list').innerHTML=l.length?l.map((x,i)=>`<div class="shop-card"><div class="shop-img">${x.photo?`<img src="${x.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:11px">`:'🛍️'}</div><div class="shop-info"><h3>${esc(x.name)}</h3><div class="shop-price">${money(x.value)}</div><div class="meta">📍 ${esc(x.where||'Não informado')} · ${esc(x.category||'Sem categoria')}</div>${x.link?`<div class="meta"><a href="${esc(x.link)}" target="_blank" rel="noopener">🔗 Abrir produto</a></div>`:''}${x.note?`<div class="meta">${esc(x.note)}</div>`:''}</div><div class="shop-actions"><button class="smallbtn" onclick="toggleShopping(${i})">${x.bought?'↩️ Não comprado':'☑️ Comprado'}</button><button class="smallbtn" onclick="openShoppingModal(${i})">Editar</button><button class="smallbtn" onclick="deleteShopping(${i})">Excluir</button></div></div>`).join(''):'<div class="empty">Sua lista está vazia. Clique em “+ Novo item”.</div>'}
+function openShoppingModal(idx=null){const l=get('shopping',[]),x=idx===null?{}:l[idx];const s=openModal(idx===null?'Novo item de compra':'Editar compra','Coloque foto, link, loja e valor.',`<div class="form-grid"><div class="field full"><label>Produto</label><input id="sh-name" value="${esc(x.name||'')}"></div><div class="field"><label>Valor (R$)</label><input id="sh-value" type="number" step="0.01" value="${x.value||''}"></div><div class="field"><label>Onde comprar</label><input id="sh-where" value="${esc(x.where||'')}"></div><div class="field"><label>Link do produto</label><input id="sh-link" type="url" value="${esc(x.link||'')}"></div><div class="field"><label>Categoria</label><input id="sh-cat" value="${esc(x.category||'')}"></div><div class="field full"><label>Foto</label><input id="sh-photo" type="file" accept="image/*"><div class="sub">A foto fica salva no aparelho junto com o item.</div></div><div class="field full"><label>Observação</label><textarea id="sh-note">${esc(x.note||'')}</textarea></div></div>`);s.onclick=()=>{const finish=photo=>{const o={id:x.id||crypto.randomUUID(),name:$('sh-name').value.trim(),value:$('sh-value').value,where:$('sh-where').value,link:$('sh-link').value,category:$('sh-cat').value,note:$('sh-note').value,photo:photo??x.photo||'',bought:x.bought||false};if(!o.name)return;if(idx===null)l.push(o);else l[idx]=o;set('shopping',l);closeModal();renderShopping();renderHome()};const f=$('sh-photo').files[0];if(f){const r=new FileReader();r.onload=()=>finish(r.result);r.readAsDataURL(f)}else finish(null)}}
+function toggleShopping(i){const l=get('shopping',[]);l[i].bought=!l[i].bought;set('shopping',l);renderShopping();renderHome()}function deleteShopping(i){const l=get('shopping',[]);l.splice(i,1);set('shopping',l);renderShopping();renderHome()}
 
-function openEventQuickAdd(date, hour){
-  openModal(`
-    <h3>Novo compromisso</h3>
-    <div class="modal-sub">${DOW_FULL[date.getDay()]}, ${date.getDate()} de ${MONTHS[date.getMonth()]}</div>
-    <label class="field-label">Horário</label>
-    <input type="time" id="qa-time" value="${pad(hour)}:00">
-    <label class="field-label">Título</label>
-    <input type="text" id="qa-title" placeholder="Ex.: Estudar Direito Civil">
-    <div class="btn-row">
-      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-primary" id="qa-save">Salvar</button>
-    </div>
-  `);
-  document.getElementById('qa-save').onclick = async ()=>{
-    const title = document.getElementById('qa-title').value.trim();
-    const time = document.getElementById('qa-time').value;
-    if(!title) return;
-    const key = iso(date);
-    const evs = await getEvents(key);
-    evs.push({time, title});
-    evs.sort((a,b)=> (a.time||'').localeCompare(b.time||''));
-    await setEvents(key, evs);
-    closeModal();
-    renderCalendar();
-  };
-}
+function renderBirthday(){const info=get('birthdayInfo',{date:'',time:'',location:'',budget:''}),l=get('birthday',[]),sum=l.reduce((a,x)=>a+Number(x.value||0),0);$('birthday-info').innerHTML=`<div class="meta">Data: <b>${fmtDate(info.date)}</b></div><div class="meta">Horário: <b>${esc(info.time||'—')}</b></div><div class="meta">Local: <b>${esc(info.location||'—')}</b></div><div class="meta">Orçamento: <b>${info.budget?money(info.budget):'—'}</b></div>`;$('birthday-summary').innerHTML=`<div class="metric"><span>Convidados</span><strong>${l.filter(x=>x.kind==='Convidado').length}</strong></div><div class="metric"><span>Compras</span><strong>${l.filter(x=>x.kind==='Compra').length}</strong></div><div class="metric"><span>Total previsto</span><strong>${money(sum)}</strong></div>`;$('birthday-list').innerHTML=l.length?l.map((x,i)=>`<div class="data-card"><h3>${esc(x.name)} <span class="pill">${esc(x.kind)}</span></h3><div class="meta">${x.time?'🕐 '+esc(x.time)+' · ':''}${x.place?'📍 '+esc(x.place)+' · ':''}${x.value?money(x.value):''}</div><div class="meta">${esc(x.note||'')}</div><div class="actions"><button class="smallbtn" onclick="openBirthdayModal(${i})">Editar</button><button class="smallbtn" onclick="deleteBirthday(${i})">Excluir</button></div></div>`).join(''):'<div class="empty">Adicione convidados, compras, locais ou horários.</div>'}
+function editBirthdayInfo(){const x=get('birthdayInfo',{}),s=openModal('Informações do aniversário','',`<div class="form-grid"><div class="field"><label>Data</label><input id="bd-date" type="date" value="${x.date||''}"></div><div class="field"><label>Horário</label><input id="bd-time" type="time" value="${x.time||''}"></div><div class="field"><label>Local</label><input id="bd-place" value="${esc(x.location||'')}"></div><div class="field"><label>Orçamento</label><input id="bd-budget" type="number" step="0.01" value="${x.budget||''}"></div></div>`);s.onclick=()=>{set('birthdayInfo',{date:$('bd-date').value,time:$('bd-time').value,location:$('bd-place').value,budget:$('bd-budget').value});closeModal();renderBirthday()}}
+function openBirthdayModal(idx=null){const l=get('birthday',[]),x=idx===null?{}:l[idx];const s=openModal(idx===null?'Adicionar ao aniversário':'Editar item','Convidados, compras, locais e horários.',`<div class="form-grid"><div class="field"><label>Tipo</label><select id="by-kind"><option ${x.kind==='Convidado'?'selected':''}>Convidado</option><option ${x.kind==='Compra'?'selected':''}>Compra</option><option ${x.kind==='Local'?'selected':''}>Local</option><option ${x.kind==='Horário'?'selected':''}>Horário</option><option ${x.kind==='Outro'?'selected':''}>Outro</option></select></div><div class="field"><label>Nome / item</label><input id="by-name" value="${esc(x.name||'')}"></div><div class="field"><label>Horário</label><input id="by-time" type="time" value="${x.time||''}"></div><div class="field"><label>Local</label><input id="by-place" value="${esc(x.place||'')}"></div><div class="field"><label>Valor</label><input id="by-value" type="number" step="0.01" value="${x.value||''}"></div><div class="field full"><label>Observação</label><textarea id="by-note">${esc(x.note||'')}</textarea></div></div>`);s.onclick=()=>{const o={kind:$('by-kind').value,name:$('by-name').value,time:$('by-time').value,place:$('by-place').value,value:$('by-value').value,note:$('by-note').value};if(idx===null)l.push(o);else l[idx]=o;set('birthday',l);closeModal();renderBirthday()}}
+function deleteBirthday(i){const l=get('birthday',[]);l.splice(i,1);set('birthday',l);renderBirthday()}
 
-async function openDayModal(date){
-  const key = iso(date);
-  const evs = await getEvents(key);
-  const holiday = HOLIDAYS[key];
-  openModal(`
-    <h3>${date.getDate()} de ${MONTHS[date.getMonth()]}</h3>
-    <div class="modal-sub">${DOW_FULL[date.getDay()]}${holiday ? ' · 🎉 '+holiday : ''}</div>
-    <div id="day-events-list"></div>
-    <label class="field-label">Adicionar compromisso</label>
-    <input type="time" id="day-time" value="09:00" style="margin-bottom:8px;">
-    <input type="text" id="day-title" placeholder="Título do compromisso">
-    <div class="btn-row">
-      <button class="btn btn-ghost" onclick="closeModal()">Fechar</button>
-      <button class="btn btn-primary" id="day-add">Adicionar</button>
-    </div>
-  `);
-  function renderList(list){
-    const el = document.getElementById('day-events-list');
-    if(!list.length){ el.innerHTML = `<div class="empty-hint" style="padding:10px 0;">Nenhum compromisso ainda.</div>`; return; }
-    el.innerHTML = list.map((ev,idx)=>`
-      <div class="event-list-item">
-        <div><span class="t">${ev.time||''}</span>${ev.title}</div>
-        <button data-idx="${idx}" class="del-ev">✕</button>
-      </div>
-    `).join('');
-    el.querySelectorAll('.del-ev').forEach(b=>{
-      b.onclick = async ()=>{
-        const i = parseInt(b.dataset.idx);
-        list.splice(i,1);
-        await setEvents(key, list);
-        renderList(list);
-        renderCalendar();
-      };
-    });
-  }
-  renderList(evs);
-  document.getElementById('day-add').onclick = async ()=>{
-    const title = document.getElementById('day-title').value.trim();
-    const time = document.getElementById('day-time').value;
-    if(!title) return;
-    evs.push({time,title});
-    evs.sort((a,b)=> (a.time||'').localeCompare(b.time||''));
-    await setEvents(key, evs);
-    document.getElementById('day-title').value='';
-    renderList(evs);
-    renderCalendar();
-  };
-}
+const themes={rose:['#f6f4f5','#7a3f56','#f0e2e8'],lavender:['#f5f3f8','#70567f','#ece5f2'],sage:['#f3f6f3','#55735f','#e4eee7'],blue:['#f2f6f8','#3c6e8f','#e3eef3'],gold:['#faf7f0','#967426','#f5ecd2']};
+function applyTheme(name){const t=themes[name]||themes.rose;document.documentElement.style.setProperty('--bg',t[0]);document.documentElement.style.setProperty('--accent',t[1]);document.documentElement.style.setProperty('--accent2',t[2]);document.querySelector('meta[name="theme-color"]').setAttribute('content',t[1])}
+function renderConfig(){const c=get('config',{});$('cfg-title').value=c.title||'Meu Planner';$('cfg-subtitle').value=c.subtitle||'Sua vida organizada em um só lugar';$('cfg-height').value=get('height',163);$('cfg-goal').value=get('goal',64);$('color-grid').innerHTML=Object.entries(themes).map(([k,t])=>`<button class="color-choice ${c.theme===k?'active':''}" onclick="chooseTheme('${k}')"><div class="swatch" style="background:${t[1]}"></div>${k==='rose'?'Rosé':k==='lavender'?'Lavanda':k==='sage'?'Sálvia':k==='blue'?'Azul':'Dourado'}</button>`).join('')}
+function chooseTheme(k){const c=get('config',{});c.theme=k;set('config',c);applyTheme(k);renderConfig()}
+function saveConfig(){const c=get('config',{});c.title=$('cfg-title').value||'Meu Planner';c.subtitle=$('cfg-subtitle').value||'Sua vida organizada em um só lugar';c.theme=c.theme||'rose';set('config',c);set('height',Number($('cfg-height').value)||163);set('goal',Number($('cfg-goal').value)||64);$('app-title').textContent=c.title;$('app-subtitle').textContent=c.subtitle;applyTheme(c.theme);alert('Configurações salvas!')}
+function exportBackup(){const data={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith(KEY))data[k]=localStorage.getItem(k)}const blob=new Blob([JSON.stringify(data)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='meu-planner-backup.json';a.click()}
+$('import-backup').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{Object.entries(JSON.parse(r.result)).forEach(([k,v])=>{if(k.startsWith(KEY))localStorage.setItem(k,v)});location.reload()}catch(err){alert('Backup inválido.')}};r.readAsText(f)};
 
-document.getElementById('cal-prev').onclick = ()=>{
-  cursorDate = currentView==='month' ? new Date(cursorDate.getFullYear(), cursorDate.getMonth()-1, 1) : addDays(cursorDate,-7);
-  renderCalendar();
-};
-document.getElementById('cal-next').onclick = ()=>{
-  cursorDate = currentView==='month' ? new Date(cursorDate.getFullYear(), cursorDate.getMonth()+1, 1) : addDays(cursorDate,7);
-  renderCalendar();
-};
-document.getElementById('cal-today').onclick = ()=>{ cursorDate = new Date(); renderCalendar(); };
-document.getElementById('view-week').onclick = ()=>{ currentView='week'; setViewBtns(); renderCalendar(); };
-document.getElementById('view-month').onclick = ()=>{ currentView='month'; setViewBtns(); renderCalendar(); };
-function setViewBtns(){
-  document.getElementById('view-week').classList.toggle('active', currentView==='week');
-  document.getElementById('view-month').classList.toggle('active', currentView==='month');
-}
-
-/* ============================================================
-   ROTINA SEMANAL
-============================================================ */
-const DEFAULT_ROTINA = {
-  Segunda:  {manha:'Estágio (9h-13h)', tarde:'', noite:'Aula: Direito e Sociedade / Teoria do Direito'},
-  Terça:    {manha:'Estágio (9h-13h)', tarde:'', noite:'Aula: Direito e Sociedade / Teoria do Direito / Direito Civil A'},
-  Quarta:   {manha:'Estágio (9h-13h)', tarde:'', noite:'Aula: Economia Política / História do Direito A / Teoria do Estado'},
-  Quinta:   {manha:'Estágio (9h-13h)', tarde:'', noite:'Aula: Direito Civil A / Vivências em Direitos Humanos'},
-  Sexta:    {manha:'Estágio (9h-13h)', tarde:'', noite:'Aula: Economia Política / Metodologia do Trabalho / Teoria do Estado'},
-  Sábado:   {manha:'', tarde:'', noite:''},
-  Domingo:  {manha:'', tarde:'', noite:'Culto (19h)'},
-};
-const DIAS = Object.keys(DEFAULT_ROTINA);
-let rotinaCursor = new Date();
-
-function rotinaKey(d){ return 'rotina:'+isoWeekKey(d); }
-
-async function renderRotina(){
-  const s = startOfWeek(rotinaCursor), e = addDays(s,6);
-  document.getElementById('rotina-week-label').textContent =
-    `Semana de ${s.getDate()} a ${e.getDate()} de ${MONTHS[e.getMonth()]}`;
-  const stored = await storeGet(rotinaKey(rotinaCursor));
-  const data = stored || JSON.parse(JSON.stringify(DEFAULT_ROTINA));
-  const grid = document.getElementById('rotina-grid');
-  grid.innerHTML = '';
-  DIAS.forEach(dia=>{
-    const dayData = data[dia] || {manha:'',tarde:'',noite:'',status:'normal'};
-    const status = dayData.status || 'normal';
-    const col = document.createElement('div');
-    col.className = 'rotina-day' + (status!=='normal' ? ' st-'+status : '');
-    col.innerHTML = `
-      <div class="dname">${dia}</div>
-      <div>
-        <div class="slot-label">Manhã</div>
-        <textarea data-dia="${dia}" data-slot="manha">${dayData.manha||''}</textarea>
-      </div>
-      <div>
-        <div class="slot-label">Tarde</div>
-        <textarea data-dia="${dia}" data-slot="tarde">${dayData.tarde||''}</textarea>
-      </div>
-      <div>
-        <div class="slot-label">Noite</div>
-        <textarea data-dia="${dia}" data-slot="noite">${dayData.noite||''}</textarea>
-      </div>
-      <div class="status-row">
-        <div class="chip ${status==='normal'?'active':''}" data-status="normal" data-dia="${dia}">Normal</div>
-        <div class="chip ${status==='sem-aula'?'active':''}" data-status="sem-aula" data-dia="${dia}">Sem aula</div>
-        <div class="chip ${status==='mudanca'?'active':''}" data-status="mudanca" data-dia="${dia}">Mudança</div>
-        <div class="chip ${status==='home'?'active':''}" data-status="home" data-dia="${dia}">Home/Tarde livre</div>
-      </div>
-    `;
-    grid.appendChild(col);
-  });
-
-  grid.querySelectorAll('textarea').forEach(t=>{
-    t.addEventListener('change', async ()=>{
-      const cur = await storeGet(rotinaKey(rotinaCursor)) || JSON.parse(JSON.stringify(DEFAULT_ROTINA));
-      if(!cur[t.dataset.dia]) cur[t.dataset.dia]={};
-      cur[t.dataset.dia][t.dataset.slot] = t.value;
-      await storeSet(rotinaKey(rotinaCursor), cur);
-    });
-  });
-  grid.querySelectorAll('.chip').forEach(chip=>{
-    chip.addEventListener('click', async ()=>{
-      const cur = await storeGet(rotinaKey(rotinaCursor)) || JSON.parse(JSON.stringify(DEFAULT_ROTINA));
-      if(!cur[chip.dataset.dia]) cur[chip.dataset.dia]={};
-      cur[chip.dataset.dia].status = chip.dataset.status;
-      await storeSet(rotinaKey(rotinaCursor), cur);
-      renderRotina();
-    });
-  });
-}
-
-document.getElementById('rotina-prev').onclick = ()=>{ rotinaCursor = addDays(rotinaCursor,-7); renderRotina(); };
-document.getElementById('rotina-next').onclick = ()=>{ rotinaCursor = addDays(rotinaCursor,7); renderRotina(); };
-document.getElementById('rotina-today').onclick = ()=>{ rotinaCursor = new Date(); renderRotina(); };
-document.getElementById('rotina-reset').onclick = async ()=>{
-  await storeSet(rotinaKey(rotinaCursor), null);
-  renderRotina();
-};
-
-/* ============================================================
-   LIVROS + BIBLIA (shared list logic with floating task modal)
-============================================================ */
-async function getList(key){ return (await storeGet(key)) || []; }
-async function saveList(key, list){ await storeSet(key, list); }
-
-function progressPct(item){
-  if(!item.paginaTotal) return 0;
-  return Math.min(100, Math.round(100*(item.paginaAtual||0)/item.paginaTotal));
-}
-function taskDoneCount(item){
-  const tasks = item.tasks||[];
-  return tasks.filter(t=>t.done).length;
-}
-
-async function renderLivros(){
-  const list = await getList('livros');
-  const el = document.getElementById('livros-list');
-  if(!list.length){ el.innerHTML = `<div class="empty-hint">Nenhum livro ainda — clique em "+ Novo livro".</div>`; return; }
-  el.innerHTML = list.map((item,idx)=>`
-    <div class="item-row">
-      <div class="item-main">
-        <div class="item-title">${item.titulo||'(sem título)'}</div>
-        <div class="item-sub">${item.autor||''}${item.autor&&item.paginaTotal?' · ':''}${item.paginaTotal? (item.paginaAtual||0)+'/'+item.paginaTotal+' páginas':''}</div>
-        ${item.paginaTotal? `<div class="progress-track"><div class="progress-fill" style="width:${progressPct(item)}%"></div></div>`:''}
-      </div>
-      <span class="task-count-badge">${taskDoneCount(item)}/${(item.tasks||[]).length} tarefas</span>
-      <button class="btn btn-ghost" data-idx="${idx}" data-act="tasks-livro">Tarefas</button>
-      <button class="subtle-btn" data-idx="${idx}" data-act="del-livro">✕</button>
-    </div>
-  `).join('');
-  el.querySelectorAll('[data-act="tasks-livro"]').forEach(b=> b.onclick=()=> openTaskModal('livros', parseInt(b.dataset.idx), renderLivros));
-  el.querySelectorAll('[data-act="del-livro"]').forEach(b=> b.onclick= async ()=>{
-    const l = await getList('livros'); l.splice(parseInt(b.dataset.idx),1); await saveList('livros', l); renderLivros();
-  });
-}
-
-async function renderBiblia(){
-  const list = await getList('biblia');
-  const el = document.getElementById('biblia-list');
-  if(!list.length){ el.innerHTML = `<div class="empty-hint">Nenhuma anotação ainda — clique em "+ Nova anotação".</div>`; return; }
-  el.innerHTML = list.map((item,idx)=>`
-    <div class="item-row">
-      <div class="item-main">
-        <div class="item-title">${item.titulo||'(sem título)'}</div>
-        <div class="item-sub">${item.pagina? 'Página/Referência: '+item.pagina : ''}${item.notas? ' · '+item.notas.slice(0,60)+(item.notas.length>60?'…':'') : ''}</div>
-      </div>
-      <span class="task-count-badge">${taskDoneCount(item)}/${(item.tasks||[]).length} tarefas</span>
-      <button class="btn btn-ghost" data-idx="${idx}" data-act="tasks-biblia">Tarefas</button>
-      <button class="subtle-btn" data-idx="${idx}" data-act="del-biblia">✕</button>
-    </div>
-  `).join('');
-  el.querySelectorAll('[data-act="tasks-biblia"]').forEach(b=> b.onclick=()=> openTaskModal('biblia', parseInt(b.dataset.idx), renderBiblia));
-  el.querySelectorAll('[data-act="del-biblia"]').forEach(b=> b.onclick= async ()=>{
-    const l = await getList('biblia'); l.splice(parseInt(b.dataset.idx),1); await saveList('biblia', l); renderBiblia();
-  });
-}
-
-document.getElementById('add-livro').onclick = ()=>{
-  openModal(`
-    <h3>Novo livro</h3>
-    <label class="field-label">Título</label><input type="text" id="nl-titulo">
-    <label class="field-label">Autor</label><input type="text" id="nl-autor">
-    <label class="field-label">Página atual</label><input type="number" id="nl-atual" value="0">
-    <label class="field-label">Total de páginas</label><input type="number" id="nl-total" value="">
-    <div class="btn-row">
-      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-primary" id="nl-save">Adicionar</button>
-    </div>
-  `);
-  document.getElementById('nl-save').onclick = async ()=>{
-    const titulo = document.getElementById('nl-titulo').value.trim();
-    if(!titulo) return;
-    const list = await getList('livros');
-    list.push({
-      titulo, autor: document.getElementById('nl-autor').value.trim(),
-      paginaAtual: parseInt(document.getElementById('nl-atual').value)||0,
-      paginaTotal: parseInt(document.getElementById('nl-total').value)||0,
-      tasks: []
-    });
-    await saveList('livros', list);
-    closeModal(); renderLivros();
-  };
-};
-
-document.getElementById('add-biblia').onclick = ()=>{
-  openModal(`
-    <h3>Nova anotação</h3>
-    <label class="field-label">Título (livro/capítulo/propósito)</label><input type="text" id="nb-titulo">
-    <label class="field-label">Página / Referência</label><input type="text" id="nb-pagina">
-    <label class="field-label">Notas</label><textarea id="nb-notas"></textarea>
-    <div class="btn-row">
-      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-primary" id="nb-save">Adicionar</button>
-    </div>
-  `);
-  document.getElementById('nb-save').onclick = async ()=>{
-    const titulo = document.getElementById('nb-titulo').value.trim();
-    if(!titulo) return;
-    const list = await getList('biblia');
-    list.push({
-      titulo, pagina: document.getElementById('nb-pagina').value.trim(),
-      notas: document.getElementById('nb-notas').value.trim(),
-      tasks: []
-    });
-    await saveList('biblia', list);
-    closeModal(); renderBiblia();
-  };
-};
-
-/* ---- Floating tasks modal (shared) ---- */
-function openTaskModal(storeName, idx, refreshFn){
-  getList(storeName).then(list=>{
-    const item = list[idx];
-    renderTaskModal();
-    function renderTaskModal(){
-      const tasks = item.tasks || [];
-      openModal(`
-        <h3>${item.titulo}</h3>
-        <div class="modal-sub">Tarefas e anotações</div>
-        <div id="task-list">
-          ${tasks.length? tasks.map((t,i)=>`
-            <div class="task-item">
-              <input type="checkbox" data-i="${i}" class="task-check" ${t.done?'checked':''}>
-              <span class="${t.done?'done':''}">${t.text}</span>
-              <button data-i="${i}" class="task-del">✕</button>
-            </div>
-          `).join('') : '<div class="empty-hint" style="padding:6px 0;">Nenhuma tarefa ainda.</div>'}
-        </div>
-        <input type="text" id="new-task-text" placeholder="Nova tarefa..." style="margin-top:10px;">
-        <label class="field-label">Anotações gerais</label>
-        <textarea id="item-notas">${item.notas||''}</textarea>
-        <div class="btn-row">
-          <button class="btn btn-ghost" onclick="closeModal()">Fechar</button>
-          <button class="btn btn-primary" id="add-task-btn">Adicionar tarefa</button>
-        </div>
-      `);
-      modalBox.querySelectorAll('.task-check').forEach(cb=>{
-        cb.onchange = async ()=>{
-          item.tasks[parseInt(cb.dataset.i)].done = cb.checked;
-          list[idx]=item; await saveList(storeName, list);
-          renderTaskModal(); refreshFn();
-        };
-      });
-      modalBox.querySelectorAll('.task-del').forEach(b=>{
-        b.onclick = async ()=>{
-          item.tasks.splice(parseInt(b.dataset.i),1);
-          list[idx]=item; await saveList(storeName, list);
-          renderTaskModal(); refreshFn();
-        };
-      });
-      document.getElementById('add-task-btn').onclick = async ()=>{
-        const val = document.getElementById('new-task-text').value.trim();
-        item.notas = document.getElementById('item-notas').value;
-        if(val){
-          item.tasks = item.tasks||[];
-          item.tasks.push({text: val, done:false});
-        }
-        list[idx]=item; await saveList(storeName, list);
-        renderTaskModal(); refreshFn();
-      };
-      document.getElementById('item-notas').addEventListener('change', async (e)=>{
-        item.notas = e.target.value;
-        list[idx]=item; await saveList(storeName, list);
-        refreshFn();
-      });
-    }
-  });
-}
-
-/* ============================================================
-   INIT
-============================================================ */
-renderCalendar();
-renderRotina();
-renderLivros();
-renderBiblia();
-
-/* ===== ABAS DA PLANILHA ===== */
-const XDEF={
-manutencoes:[{nome:'Doação de sangue',ultima:'2026-08-29',intervalo:90,regra:'Máx. 3 doações a cada 12 meses'},{nome:'Manutenção da unha',ultima:'2026-09-12',intervalo:20,regra:'A cada ~20 dias'},{nome:'Sobrancelha',ultima:'2026-09-05',intervalo:30,regra:'A cada ~30 dias'}],
-cursinhos:['Violão','Vôlei','Pintura','Redação/Escrita Jurídica','Inglês','Espanhol','Italiano','Natação'].map(nome=>({nome})),
-reservas:[{nome:'Aniversário',parcelas:1},{nome:'Festa',parcelas:1},{nome:'Dízimo (mensal)',parcelas:1},{nome:'Formatura',parcelas:12}]
-};
-function Xget(k,d=[]){try{let v=localStorage.getItem('meu-planner:'+k);return v?JSON.parse(v):d}catch(e){return d}}
-function Xset(k,v){localStorage.setItem('meu-planner:'+k,JSON.stringify(v))}
-function xe(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]) )}
-function xm(v){return 'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2})}
-function addPrompt(k,label,fields){
- document.getElementById('add-'+k).onclick=()=>{
-  let o={};for(const f of fields){let v=prompt(f.label,f.default||'');if(v===null)return;o[f.id]=v}
-  let l=Xget(k, k==='cursinhos'?XDEF.cursinhos:k==='manutencoes'?XDEF.manutencoes:k==='reservas'?XDEF.reservas:[]);l.push(o);Xset(k,l);renderX()
- }
-}
-function delX(k,i){let l=Xget(k,[]);l.splice(i,1);Xset(k,l);renderX()}
-const BOLETIM=[['ACE I','16/abr · 10,0','11/jun · —','—','—'],['Direito Civil A','30/abr · 7,3','25/jun · 8,9','01/out · —','26/nov · —'],['Direito e Sociedade','04/mai · 9,5','15/jun · —','28/set · —','16/nov · —'],['Economia Política','24/abr · 8,6','19/jun · 9,0','09/out · —','13/nov · —'],['História do Direito A','28/mai · 10,0','17/jun · —','07/out · —','11/nov / 02/dez · — / —'],['Metodologia do Trabalho','15/mai · —','17/ago · —','—','—'],['Teoria do Direito','27/abr · 10,0','22/jun · 8,5','05/out · —','23/nov · —'],['Teoria do Estado','13/mai · 9,0','— · 7,0','—','18/nov · —']];
-function renderX(){
- document.getElementById('boletim-body').innerHTML=BOLETIM.map((r,i)=>`<tr><td><strong>${r[0]}</strong></td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td><input class="mini-input" value="${xe(Xget('faltas',{})[i]||'')}" onchange="let f=Xget('faltas',{});f[${i}]=this.value;Xset('faltas',f)"></td></tr>`).join('');
- let t=Xget('trabalhos',[]);document.getElementById('trabalhos-list').innerHTML=t.length?t.map((x,i)=>`<div class="data-card"><div class="data-title">${xe(x.titulo)}</div><div class="data-meta">${xe(x.prioridade)} · Entrega: ${xe(x.entrega||'—')}</div><div class="data-meta">${xe(x.tarefas||'')}</div><div class="data-actions"><button class="subtle-btn" onclick="delX('trabalhos',${i})">✕</button></div></div>`).join(''):'<div class="empty-hint">Nenhum trabalho cadastrado.</div>';
- let h=Xget('horas',[]);document.getElementById('horas-body').innerHTML=h.length?h.map((x,i)=>`<tr><td>${xe(x.categoria)}</td><td>${xe(x.horas)}h</td><td>${xe(x.data||'—')}</td><td>${xe(x.instituicao||'—')}</td><td>${xe(x.obs||'')}</td><td><button class="subtle-btn" onclick="delX('horas',${i})">✕</button></td></tr>`).join(''):'<tr><td colspan="6" class="empty-hint">Nenhuma atividade registrada.</td></tr>';
- let f=Xget('financeiro',[]),en=f.filter(x=>x.tipo==='Entrada').reduce((a,x)=>a+Number(x.valor||0),0),sa=f.filter(x=>x.tipo==='Saída').reduce((a,x)=>a+Number(x.valor||0),0);document.getElementById('finance-summary').innerHTML=`<div class="metric-card"><span>Entradas</span><strong>${xm(en)}</strong></div><div class="metric-card"><span>Saídas</span><strong>${xm(sa)}</strong></div><div class="metric-card"><span>Saldo</span><strong>${xm(en-sa)}</strong></div>`;document.getElementById('finance-body').innerHTML=f.length?f.map((x,i)=>`<tr><td>${xe(x.data||'—')}</td><td>${xe(x.desc)}</td><td>${xe(x.tipo)}</td><td>${xm(x.valor)}</td><td>${xe(x.parcelas||1)}</td><td>${xe(x.pago||'Não')}</td><td>${xe(x.obs||'')}</td><td><button class="subtle-btn" onclick="delX('financeiro',${i})">✕</button></td></tr>`).join(''):'<tr><td colspan="8" class="empty-hint">Nenhum lançamento.</td></tr>';
- let p=Xget('produtos',[]);document.getElementById('produtos-list').innerHTML=p.length?p.map((x,i)=>`<div class="data-card"><div class="data-title">${xe(x.produto)}</div><div class="data-meta">${xe(x.loja)} · Compra: ${xe(x.data||'—')} · ${xm(x.valor)}</div><div style="margin-top:8px"><span class="pill">${xe(x.status||'A caminho')}</span> <span class="pill">${xe(x.pago||'Não')}</span></div><div class="data-meta">${xe(x.obs||'')}</div><div class="data-actions"><button class="subtle-btn" onclick="delX('produtos',${i})">✕</button></div></div>`).join(''):'<div class="empty-hint">Nenhum produto a caminho.</div>';
- let pz=Xget('peso',[]),meta=Xget('peso-meta',''),last=pz[pz.length-1];document.getElementById('peso-atual').textContent=last?Number(last.valor).toFixed(1)+' kg':'—';document.getElementById('peso-meta').textContent=meta?Number(meta).toFixed(1)+' kg':'Defina';document.getElementById('peso-diff').textContent=last&&meta?(Number(last.valor)-Number(meta)).toFixed(1)+' kg':'—';document.getElementById('peso-body').innerHTML=pz.length?pz.map((x,i)=>`<tr><td>${xe(x.data)}</td><td>${xe(x.valor)} kg</td><td>${xe(x.treino||'')}</td><td>${xe(x.obs||'')}</td><td><button class="subtle-btn" onclick="delX('peso',${i})">✕</button></td></tr>`).join(''):'<tr><td colspan="5" class="empty-hint">Nenhum registro de peso.</td></tr>';
- let m=Xget('manutencoes',XDEF.manutencoes);document.getElementById('manutencoes-list').innerHTML=m.map((x,i)=>{let d=x.ultima?new Date(x.ultima+'T00:00:00'):null,n=d?new Date(d.getTime()+Number(x.intervalo||0)*86400000):null;return `<div class="data-card"><div class="data-title">${xe(x.nome)}</div><div class="data-meta">Última vez: ${xe(x.ultima||'—')} · Intervalo: ${xe(x.intervalo||'—')} dias</div><div style="margin-top:8px"><span class="pill">Próxima: ${n?n.toLocaleDateString('pt-BR'):'—'}</span></div><div class="data-meta">${xe(x.regra||'')}</div><div class="data-actions"><button class="subtle-btn" onclick="delX('manutencoes',${i})">✕</button></div></div>`}).join('');
- let r=Xget('reservas',XDEF.reservas);document.getElementById('reservas-list').innerHTML=r.map((x,i)=>`<div class="data-card"><div class="data-title">${xe(x.nome)}</div><div class="data-meta">Meta: ${xm(x.meta)} · Guardado: ${xm(x.guardado)}</div><div style="margin-top:8px"><span class="pill">Parcela: ${xm(Number(x.meta||0)/Number(x.parcelas||1))}</span> <span class="pill">Falta: ${xm(Math.max(0,Number(x.meta||0)-Number(x.guardado||0)))}</span></div><div class="data-actions"><button class="subtle-btn" onclick="delX('reservas',${i})">✕</button></div></div>`).join('');
- let inv=Xget('investimentos',[]);document.getElementById('investimentos-list').innerHTML=inv.length?inv.map((x,i)=>`<div class="data-card"><div class="data-title">${xe(x.tipo)}</div><div class="data-meta">${xm(x.valor)} · ${xe(x.rendimento||'—')}% a.a. · Aplicação: ${xe(x.aplicacao||'—')}</div><div class="data-meta">Resgate: ${xe(x.resgate||'—')} · ${xe(x.obs||'')}</div><div class="data-actions"><button class="subtle-btn" onclick="delX('investimentos',${i})">✕</button></div></div>`).join(''):'<div class="empty-hint">Nenhum investimento cadastrado.</div>';
- let c=Xget('cursinhos',XDEF.cursinhos);document.getElementById('cursinhos-list').innerHTML=c.map((x,i)=>`<div class="data-card"><div class="data-title">${xe(x.nome)}</div><div class="data-meta">${xe(x.status||'Sem status')} · ${xe(x.horario||'Horário não definido')} · ${xe(x.onde||'Local não definido')}</div><div class="data-meta">${xe(x.objetivo||'')}</div><div style="margin-top:8px"><span class="pill">${x.custo?xm(x.custo)+'/mês':'Custo não definido'}</span></div><div class="data-actions"><button class="subtle-btn" onclick="delX('cursinhos',${i})">✕</button></div></div>`).join('');
-}
-addPrompt('trabalho','Novo trabalho',[{id:'titulo',label:'Trabalho / matéria'},{id:'prioridade',label:'Prioridade',default:'Média'},{id:'entrega',label:'Entrega (AAAA-MM-DD)'},{id:'tarefas',label:'Tarefas (separe por ; )'},{id:'obs',label:'Observações'}]);
-addPrompt('hora','Registrar atividade',[{id:'categoria',label:'Categoria'},{id:'horas',label:'Horas'},{id:'data',label:'Data (AAAA-MM-DD)'},{id:'instituicao',label:'Instituição'},{id:'obs',label:'Observações'}]);
-addPrompt('financeiro','Novo lançamento',[{id:'data',label:'Data (AAAA-MM-DD)'},{id:'desc',label:'Descrição'},{id:'tipo',label:'Tipo: Entrada ou Saída',default:'Saída'},{id:'valor',label:'Valor (R$)'},{id:'parcelas',label:'Parcelas',default:'1'},{id:'pago',label:'Pago? Sim/Não',default:'Não'},{id:'obs',label:'Observações'}]);
-addPrompt('produto','Novo produto',[{id:'produto',label:'Produto'},{id:'loja',label:'Loja/Site'},{id:'data',label:'Data da compra'},{id:'valor',label:'Valor (R$)'},{id:'pago',label:'Pago? Sim/Não',default:'Sim'},{id:'status',label:'Status entrega',default:'A caminho'},{id:'obs',label:'Previsão/Observações'}]);
-addPrompt('peso','Registrar peso',[{id:'data',label:'Data'},{id:'valor',label:'Peso (kg)'},{id:'treino',label:'Treino'},{id:'obs',label:'Observações'}]);
-document.getElementById('peso-meta').onclick=()=>{let v=prompt('Qual é sua meta de peso (kg)?',Xget('peso-meta',''));if(v!==null){Xset('peso-meta',v);renderX()}};
-addPrompt('manutencao','Nova manutenção',[{id:'nome',label:'Atividade'},{id:'ultima',label:'Última vez'},{id:'intervalo',label:'Intervalo (dias)'},{id:'regra',label:'Limite/regra'}]);
-addPrompt('reserva','Nova reserva',[{id:'nome',label:'Reserva/Objetivo'},{id:'meta',label:'Meta (R$)'},{id:'guardado',label:'Já guardado (R$)'},{id:'parcelas',label:'Nº de parcelas',default:'1'}]);
-addPrompt('investimento','Novo investimento',[{id:'tipo',label:'Tipo (poupança/CDB/etc.)'},{id:'valor',label:'Valor investido (R$)'},{id:'rendimento',label:'Rendimento esperado (% a.a.)'},{id:'aplicacao',label:'Data aplicação'},{id:'resgate',label:'Data resgate'},{id:'obs',label:'Observações'}]);
-addPrompt('cursinho','Novo cursinho',[{id:'nome',label:'Curso'},{id:'status',label:'Status',default:'Planejado'},{id:'horario',label:'Dia/Horário'},{id:'onde',label:'Onde/Escola'},{id:'objetivo',label:'Objetivo/Progresso'},{id:'custo',label:'Custo mensal (R$)'}]);
-
-/* ===== LISTA DE COMPRAS + CONFIGURAÇÕES ===== */
-const DEFAULT_TITLE='Meu Planner';
-const DEFAULT_SUBTITLE='Calendário, rotina semanal, livros e Bíblia — tudo num só lugar';
-
-function renderCompras(){
-  const l=Xget('compras',[]);
-  const total=l.reduce((a,x)=>a+Number(x.valor||0),0);
-  const comprados=l.filter(x=>String(x.status||'').toLowerCase()==='comprado').reduce((a,x)=>a+Number(x.valor||0),0);
-  document.getElementById('compras-count').textContent=l.length;
-  document.getElementById('compras-total').textContent=xm(total);
-  document.getElementById('compras-comprados').textContent=xm(comprados);
-  document.getElementById('compras-list').innerHTML=l.length?l.map((x,i)=>`
-    <div class="shop-card">
-      ${x.foto?`<img class="shop-img" src="${x.foto}" alt="">`:`<div class="shop-img placeholder">🛍️</div>`}
-      <div class="shop-title">${xe(x.nome||'Sem nome')}</div>
-      <div class="shop-price">${xm(x.valor)}</div>
-      <div class="shop-meta">📍 ${xe(x.onde||'Onde comprar não informado')}</div>
-      <div class="shop-meta">📂 ${xe(x.categoria||'Sem categoria')} · ${xe(x.status||'Não comprado')}</div>
-      ${x.link?`<div style="margin-top:7px;"><a class="shop-link" href="${xe(x.link)}" target="_blank" rel="noopener">🔗 Abrir link</a></div>`:''}
-      ${x.obs?`<div class="shop-meta" style="margin-top:7px;">${xe(x.obs)}</div>`:''}
-      <div class="shop-actions">
-        <button class="subtle-btn" onclick="editCompra(${i})">✏️ Editar</button><button class="subtle-btn" onclick="editCompraPhoto(${i})">📷 Foto</button><button class="subtle-btn" onclick="toggleCompra(${i})">${String(x.status||'').toLowerCase()==='comprado'?'↩️ Desmarcar':'✅ Marcar comprado'}</button>
-        <button class="subtle-btn" onclick="delX('compras',${i});renderCompras()">✕ Excluir</button>
-      </div>
-    </div>`).join(''):'<div class="empty-hint">Sua lista de compras está vazia. Adicione o primeiro item.</div>';
-}
-function toggleCompra(i){
-  let l=Xget('compras',[]);
-  l[i].status=String(l[i].status||'').toLowerCase()==='comprado'?'Não comprado':'Comprado';
-  Xset('compras',l);renderCompras();
-}
-document.getElementById('add-compra').onclick=()=>{
-  const nome=prompt('Nome do produto:'); if(nome===null)return;
-  const valor=prompt('Valor (R$):','0'); if(valor===null)return;
-  const onde=prompt('Onde comprar (loja/site):',''); if(onde===null)return;
-  const link=prompt('Link do produto (opcional):',''); if(link===null)return;
-  const categoria=prompt('Categoria (opcional):',''); if(categoria===null)return;
-  const obs=prompt('Observação (opcional):',''); if(obs===null)return;
-  const item={nome,valor:valor.replace(',','.'),onde,link,categoria,obs,status:'Não comprado',foto:''};
-  // Foto é adicionada pela edição do item para não depender de prompt.
-  let l=Xget('compras',[]);l.push(item);Xset('compras',l);renderCompras();
-};
-function editCompraPhoto(i){
-  const input=document.createElement('input');input.type='file';input.accept='image/*';
-  input.onchange=()=>{
-    const f=input.files[0];if(!f)return;
-    const r=new FileReader();r.onload=()=>{let l=Xget('compras',[]);l[i].foto=r.result;Xset('compras',l);renderCompras()};r.readAsDataURL(f);
-  };input.click();
-}
-function editCompra(i){
-  let l=Xget('compras',[]),x=l[i];if(!x)return;
-  x.nome=prompt('Nome do produto:',x.nome)||x.nome;
-  x.valor=prompt('Valor (R$):',x.valor)||x.valor;
-  x.onde=prompt('Onde comprar:',x.onde)||x.onde;
-  x.link=prompt('Link:',x.link)||x.link;
-  x.categoria=prompt('Categoria:',x.categoria)||x.categoria;
-  x.obs=prompt('Observação:',x.obs)||x.obs;
-  Xset('compras',l);renderCompras();
-}
-/* Permite foto pelo clique em qualquer cartão */
-document.getElementById('compras-list').addEventListener('dblclick',e=>{
-  const card=e.target.closest('.shop-card'); if(!card)return;
-  const cards=[...document.querySelectorAll('.shop-card')],i=cards.indexOf(card);
-  editCompraPhoto(i);
-});
-function renderConfig(){
-  document.getElementById('cfg-title').value=Xget('cfg-title',DEFAULT_TITLE);
-  document.getElementById('cfg-subtitle').value=Xget('cfg-subtitle',DEFAULT_SUBTITLE);
-  document.getElementById('cfg-theme').value=Xget('cfg-theme','normal');
-}
-function applyConfig(){
-  const title=Xget('cfg-title',DEFAULT_TITLE),sub=Xget('cfg-subtitle',DEFAULT_SUBTITLE);
-  document.querySelector('.top h1').textContent=title;
-  document.querySelector('.top p').textContent=sub;
-  document.title=title;
-}
-document.getElementById('save-config').onclick=()=>{
-  Xset('cfg-title',document.getElementById('cfg-title').value||DEFAULT_TITLE);
-  Xset('cfg-subtitle',document.getElementById('cfg-subtitle').value||DEFAULT_SUBTITLE);
-  Xset('cfg-theme',document.getElementById('cfg-theme').value);
-  applyConfig();alert('Configurações salvas!');
-};
-document.getElementById('export-data').onclick=()=>{
-  const data={};
-  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith('meu-planner:'))data[k]=localStorage.getItem(k)}
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='meu-planner-backup.json';a.click();URL.revokeObjectURL(a.href);
-};
-document.getElementById('import-data').onchange=e=>{
-  const f=e.target.files[0];if(!f)return;
-  const r=new FileReader();r.onload=()=>{
-    try{const data=JSON.parse(r.result);Object.entries(data).forEach(([k,v])=>{if(k.startsWith('meu-planner:'))localStorage.setItem(k,v)});
-      applyConfig();renderX();renderCompras();renderConfig();alert('Backup restaurado!');}
-    catch(err){alert('Não consegui ler esse backup.')}
-  };r.readAsText(f);
-};
-document.getElementById('reset-custom').onclick=()=>{
-  if(!confirm('Restaurar os dados padrão das abas? Os dados personalizados salvos poderão ser perdidos.'))return;
-  ['manutencoes','cursinhos','reservas','compras','trabalhos','horas','financeiro','produtos','peso','investimentos'].forEach(k=>localStorage.removeItem('meu-planner:'+k));
-  renderX();renderCompras();renderConfig();
-};
-
-renderX();
-renderCompras();
-renderConfig();
-applyConfig();
-
-</script>
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(console.error));
-}
+// Apply config + initial render.
+const cfg=get('config',{});$('app-title').textContent=cfg.title||'Meu Planner';$('app-subtitle').textContent=cfg.subtitle||'Sua vida organizada em um só lugar';applyTheme(cfg.theme||'rose');renderGrade();renderHome();
 </script>
 </body>
 </html>
